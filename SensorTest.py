@@ -6,6 +6,8 @@ import time
 #import json
 #import urllib2
 
+global current_time
+
 def SQLsend():
 	# Inserting the temp and humidity data into SQL
     dataInsert = "INSERT INTO TempHumidity(Temperature, Humidity) values (%d, %d)" % (reading.temperature, reading.humidity)
@@ -13,10 +15,11 @@ def SQLsend():
     cnxn.commit()
 
 def timedsend():
-	    if current_time + 5 <= int(time.mktime(dt.datetime.now().timetuple())):
-			SQLsend()
-			current_time = int(time.mktime(dt.datetime.now().timetuple()))
-	
+    global current_time
+    if (current_time + 5 <= int(time.mktime(dt.datetime.now().timetuple()))):
+        SQLsend()
+        current_time = int(time.mktime(dt.datetime.now().timetuple()))
+
 # Setting up the Raspberry Pi
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -47,15 +50,15 @@ if reading.is_valid():
     cnxn = pyodbc.connect(cnxn_string)
     cursor = cnxn.cursor()
 
- while True:
-	timedsend()
-	if 0xFF == ord('q'):
-		break
+    while True:
+        timedsend()
+        if 0xFF == ord('q'):
+            break
 
 #TODO: Implement proper method for retrieving data every x seconds
 
 else:
     if (reading.error_code == 1):
         print("Error %d: Data missing" % reading.error_code)
-    else if (reading.error_code == 2):
+    elif (reading.error_code == 2):
         print("Error %d: CRC" % reading.error_code)
