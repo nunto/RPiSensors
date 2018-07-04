@@ -1,9 +1,22 @@
 import RPi.GPIO as GPIO
 import DHT11
 import pyodbc
+import datetime as dt
+import time
 #import json
 #import urllib2
 
+def SQLsend():
+	# Inserting the temp and humidity data into SQL
+    dataInsert = "INSERT INTO TempHumidity(Temperature, Humidity) values (%d, %d)" % (reading.temperature, reading.humidity)
+    cursor.execute(dataInsert)
+    cnxn.commit()
+
+def timedsend():
+	    if current_time + 5 <= int(time.mktime(dt.datetime.now().timetuple())):
+			SQLsend()
+			current_time = int(time.mktime(dt.datetime.now().timetuple()))
+	
 # Setting up the Raspberry Pi
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -14,6 +27,9 @@ sensor = DHT11.DHT11(pin=14)
 
 # Reads the current sensor data
 reading = sensor.read()
+
+# Setting current time
+current_time = int(time.mktime(dt.datetime.now().timetuple()))
 
 if reading.is_valid():
     print("Temp: %d C" % reading.temperature)
@@ -31,12 +47,12 @@ if reading.is_valid():
     cnxn = pyodbc.connect(cnxn_string)
     cursor = cnxn.cursor()
 
-    # Inserting the temp and humidity data into SQL
-    dataInsert = "INSERT INTO TempHumidity(Temperature, Humidity) values (%d, %d)" % (reading.temperature, reading.humidity)
-    cursor.execute(dataInsert)
-    cnxn.commit()
+ while True:
+	timedsend()
+	if 0xFF == ord('q'):
+		break
 
-    #TODO: Implement proper method for retrieving data every x seconds
+#TODO: Implement proper method for retrieving data every x seconds
 
 else:
     if (reading.error_code == 1):
