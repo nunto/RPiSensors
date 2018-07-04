@@ -13,9 +13,9 @@ def SQLsend():
     cnxn.commit()
 
 def timedsend():
-	    if current_time + 5 <= int(time.mktime(dt.datetime.now().timetuple())):
+	    if(current_time + 5 <= int(time.mktime(dt.datetime.now().timetuple()))):
 			SQLsend()
-			current_time = int(time.mktime(dt.datetime.now().timetuple()))
+			global current_time = int(time.mktime(dt.datetime.now().timetuple()))
 	
 # Setting up the Raspberry Pi
 GPIO.setwarnings(False)
