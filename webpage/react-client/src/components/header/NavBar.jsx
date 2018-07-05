@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Menu, Segment } from 'semantic-ui-react';
 
 class NavBar extends Component {
@@ -11,6 +11,7 @@ class NavBar extends Component {
     _handleItemClick = (e, { name }) => {
         console.log("Active: " + name)
         this.setState({ activeItem: name }) 
+        console.log(this.state.activeItem)
     }
 
     render() {
@@ -18,9 +19,32 @@ class NavBar extends Component {
         return (
                 <div>
                     <Menu pointing secondary>
-                        <Menu.Item name="home" active={activeItem === 'home'} onClick={this._handleItemClick} />
-                        <Menu.Item name="devices" active={activeItem === 'devices'} onClick={this._handleItemClick} />
-                        <Menu.Item name="sensors" active={activeItem === 'sensors'} onClick={this._handleItemClick} />
+                     <Menu.Item header>Dashboard</Menu.Item>
+                        <Menu.Item 
+                            as={NavLink} 
+                            exact to="/" 
+                            name="home" 
+                            active={activeItem === 'home'} 
+                            onClick={this._handleItemClick} 
+                        />
+                        <Menu.Item 
+                            as={NavLink} 
+                            to="/devices" 
+                            name="devices" 
+                            active={activeItem === 'devices'} 
+                            onClick={this._handleItemClick} 
+                        />
+                        <Menu.Item
+                            as={NavLink}
+                            to="/sensors" 
+                            name="sensors" 
+                            active={activeItem === 'sensors'} 
+                            onClick={this._handleItemClick} 
+                        />
+
+                        <Menu.Menu position='right'>
+                            <Menu.Item name="logout" active={activeItem === "logout"} onClick={this._handleItemClick} />
+                        </Menu.Menu>
                     </Menu>
                 </div>
         )
