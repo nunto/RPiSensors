@@ -14,7 +14,7 @@ class GraphicInterface:
         self.is_Ready = False
         self.mainframe = None
         self.root = None
-#TO DO Name vqariables and menus to be more specific     
+#TO DO Name variables and menus to be more specific     
         
     def createwindow(self):
         self.root = Tk()
