@@ -69,7 +69,7 @@ FileUsage = 1
 
 Moving onto the odbc.ini file:
 ```
-sudo leafpad odbcinst.ini
+sudo leafpad odbc.ini
 ```
 
 and add the lines: 
