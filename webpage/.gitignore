@@ -1,0 +1,17 @@
+# Logs
+logs
+*.Logs
+*.log
+
+# Compiled files
+build/
+bundle.js
+
+# Dependencies
+node_modules/
+
+# VSCode
+.vscode/
+
+# Mac
+.ds_store
