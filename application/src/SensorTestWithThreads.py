@@ -14,6 +14,11 @@ import socket
 ConnectionLock= Semaphore(1)
 is_connected = False
 
+# Setting current time
+current_time = int(time.mktime(dt.datetime.now().timetuple()))
+
+
+
 #Thread Classes setup 
 class ConnectionCheckThread (threading.Thread):
     def __init__(self):
@@ -34,34 +39,30 @@ class LocalDataDump (threading.Thread):
         OfflineDump()
 
 def connectiontest():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ConnectionLock.acquire()
-    try:
-        host_ip = socket.gethostbyname('www.google.com')
-        is_connected = True
-    except:
-        is_connected = False
-    ConnectionLock.release()
+    global is_connected
+    while 1:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            host_ip = socket.gethostbyname('www.google.com')
+            if(not is_connected):
+                ConnectionLock.acquire()
+                is_connected = True
+                ConnectionLock.release()
+        except:
+            if(is_connected):
+                ConnectionLock.acquire()       
+                is_connected = False
+                ConnectionLock.release()
 
 
-def ReadingData():
-    # Setting up the Raspberry Pi
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-    GPIO.cleanup()
 
-        
-
-    # Setting up the Temp & Humidity sensor
-    sensor = DHT11.DHT11(pin=14)
-    #sets reading to be the sensor data
-    reading = sensor.read()
 
 #Online sending methods
 
 def OnlineDump():
     #executing everything indefinitely in a loop
-    while True:
+    global is_connected
+    while 1:
         ConnectionLock.acquire()
         if(is_connected):
             timedsendOnline()
@@ -101,7 +102,8 @@ def SQLsend():
 
 def OfflineDump():
     #executing everything indefinitely in a loop
-    while True:
+    global is_connected
+    while 1:
         ConnectionLock.acquire()
         if(not is_connected):
             timedsendOffline()
@@ -117,6 +119,7 @@ def timedsendOffline():
         current_time = int(time.mktime(dt.datetime.now().timetuple()))
 
 def LocalFileSend():
+    global reading
     if reading.is_valid():
         a= [current_time, reading.temperature, reading.temperature]
         with open('localdatadump.pickle', 'wb') as handle:
@@ -135,20 +138,7 @@ def getRPMInterval():
     return float(graphic.RPMInterval)
 
 
-#GUI Popup method called when program is started
-
-def GUIPopup():
-    
-    graphic = gui.GraphicInterface()
-    graphic.createwindow()
-    #once the GUI submit button has been pressed
-    while(not graphic.is_Ready):
-        time.sleep(0.5)
         
-    # Setting current time
-    current_time = int(time.mktime(dt.datetime.now().timetuple()))
-
-    
 """
 else:
     if (reading.error_code == 1):
@@ -156,8 +146,23 @@ else:
     elif (reading.error_code == 2):
         print("Error %d: CRC" % reading.error_code)
 """
-GUIPopup()
-ReadingData()
+graphic = gui.GraphicInterface()
+graphic.createwindow()
+#once the GUI submit button has been pressed
+while(not graphic.is_Ready):
+    time.sleep(0.5)
+
+# Setting up the Raspberry Pi
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.cleanup()
+
+    
+
+# Setting up the Temp & Humidity sensor
+sensor = DHT11.DHT11(pin=14)
+#sets reading to be the sensor data
+reading = sensor.read()
 
 ConnectionThread = ConnectionCheckThread()
 SQLSending = SQLSendThread()
@@ -168,5 +173,6 @@ SQLSending.start()
 LocalDataDumping.start()
 
 ConnectionThread.join()
-SQLSending.join()
 LocalDataDumping.join()
+SQLSending.join()
+
