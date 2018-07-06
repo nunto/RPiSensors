@@ -5,25 +5,5 @@ header {
 }
 
 body{
-   min-width:1000px;        /* Suppose you want minimum width of 1000px */
-   width: auto !important;  /* Firefox will set width as auto */
-   width:1000px;            /* As IE6 ignores !important it will set width as 1000px; */
-}
-
-#headerButtons {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-.navButton {
-    float: right;
-}
-
-footer {
-    display: block;
-    width: 100%;
-    height: 50px;
-    backgroundcolor: black;
-    color: white;
+    margin: 16px;         /* As IE6 ignores !important it will set width as 1000px; */
 }
