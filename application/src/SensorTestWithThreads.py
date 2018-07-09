@@ -8,16 +8,11 @@ from threading import Thread, Semaphore
 import threading
 import sys
 import socket
+import pickle
+import os
+
 #import json
 #import urllib2
-#Connection variable initialized and lock set up
-ConnectionLock= Semaphore(1)
-is_connected = False
-
-# Setting current time
-current_time = int(time.mktime(dt.datetime.now().timetuple()))
-
-
 
 #Thread Classes setup 
 class ConnectionCheckThread (threading.Thread):
@@ -50,12 +45,42 @@ def connectiontest():
                 ConnectionLock.release()
         except:
             if(is_connected):
-                ConnectionLock.acquire()       
+                ConnectionLock.acquire()
                 is_connected = False
                 ConnectionLock.release()
 
 
+def syncfromlocal():
+    global objects
+    global DumpingFile
+    global cnxn_string
+    ConnectionLock.acquire()
+    if(is_connected and (os.stat("localdatadump.pickle").st_size==0)):
+        ConnectionLock.release()
+        DumpingFile.close()
+        
+        with open('localdatadump.pickle', 'rb') as DumpingFile:
+            while True:
+                try:
+                    objects.append(pickle.load(DumpingFile))
+                except EOFError:
+                    break
+        print("reloading offline data")
 
+
+        # Connecting SQL Server
+        cnxn = pyodbc.connect(cnxn_string)
+        cursor = cnxn.cursor()
+        global current_time
+        
+        # Inserting the temp and humidity data into SQL
+                   
+        for i in range(len(objects)):
+            dataInsert = "INSERT INTO TempHumidity(Timestamp, Temperature, Humidity) values (%d, %d, %d)" % (objects[i][0], objects[i][1], objects[i][2])
+            cursor.execute(dataInsert)
+            cnxn.commit()
+    else:
+        ConnectionLock.release()
 
 #Online sending methods
 
@@ -65,8 +90,10 @@ def OnlineDump():
     while 1:
         ConnectionLock.acquire()
         if(is_connected):
-            timedsendOnline()
             ConnectionLock.release()
+            timedsendOnline()
+            syncfromlocal()
+
         else:
             ConnectionLock.release()
 
@@ -78,23 +105,19 @@ def timedsendOnline():
         current_time = int(time.mktime(dt.datetime.now().timetuple()))
 
 def SQLsend():
-    
+    #sets reading to be the sensor data
+    global cnxn_string
+    readingSQL = sensor.read()
     #checks if there is data still in the reading
-    if reading.is_valid():
-
-        # SQL Server connection details
-        dsn = 'sqlserverdatasource'
-        db = 'SensorReadings'
-        uid = 'root_sensor'
-        pwd = 'Sensorread1'
-        cnxn_string = 'DSN=%s;UID=%s;PWD=%s;DATABASE=%s;' % (dsn, uid, pwd, db)
+    if readingSQL.is_valid():
+        print("sending online data")
 
         # Connecting SQL Server
         cnxn = pyodbc.connect(cnxn_string)
         cursor = cnxn.cursor()
         global current_time
         # Inserting the temp and humidity data into SQL
-        dataInsert = "INSERT INTO TempHumidity(Timestamp, Temperature, Humidity) values (%d, %d, %d)" % (current_time, reading.temperature, reading.humidity)
+        dataInsert = "INSERT INTO TempHumidity(Timestamp, Temperature, Humidity) values (%d, %d, %d)" % (current_time, readingSQL.temperature, readingSQL.humidity)
         cursor.execute(dataInsert)
         cnxn.commit()
 
@@ -106,8 +129,9 @@ def OfflineDump():
     while 1:
         ConnectionLock.acquire()
         if(not is_connected):
+            ConnectionLock.release()            
             timedsendOffline()
-            ConnectionLock.release()
+            
         else:
             ConnectionLock.release()
 
@@ -119,15 +143,17 @@ def timedsendOffline():
         current_time = int(time.mktime(dt.datetime.now().timetuple()))
 
 def LocalFileSend():
-    global reading
-    if reading.is_valid():
-        a= [current_time, reading.temperature, reading.temperature]
-        with open('localdatadump.pickle', 'wb') as handle:
-            pickle.dump(a, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
-
+    global DumpingFile
+    global is_connected
+    readinglocal = sensor.read()
+    if readinglocal.is_valid():
+        print("sending local data")
+        a= [current_time, readinglocal.temperature, readinglocal.humidity]
+        print(current_time)
+        pickle.dump(a, DumpingFile, protocol=pickle.HIGHEST_PROTOCOL)
+        
 #methods to prpoerly retrieve values put into the GUI
-DHTInterval = 0
+
 def getDHTInterval():
     return float(graphic.DHTInterval)
 
@@ -146,6 +172,26 @@ else:
     elif (reading.error_code == 2):
         print("Error %d: CRC" % reading.error_code)
 """
+
+#Connection variable initialized and lock set up
+
+# SQL Server connection details
+dsn = 'sqlserverdatasource'
+db = 'SensorReadings'
+uid = 'root_sensor'
+pwd = 'Sensorread1'
+cnxn_string = 'DSN=%s;UID=%s;PWD=%s;DATABASE=%s;' % (dsn, uid, pwd, db)
+
+ConnectionLock= Semaphore(1)
+is_connected = False
+
+DumpingFile = open('localdatadump.pickle', 'wb')
+
+# Setting current time
+current_time = int(time.mktime(dt.datetime.now().timetuple()))
+
+objects =[]
+
 graphic = gui.GraphicInterface()
 graphic.createwindow()
 #once the GUI submit button has been pressed
@@ -161,8 +207,8 @@ GPIO.cleanup()
 
 # Setting up the Temp & Humidity sensor
 sensor = DHT11.DHT11(pin=14)
-#sets reading to be the sensor data
-reading = sensor.read()
+
+
 
 ConnectionThread = ConnectionCheckThread()
 SQLSending = SQLSendThread()
