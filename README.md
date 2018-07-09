@@ -1,6 +1,14 @@
 # Sensor Readings
+Project Description here
 
-## Setting up the Raspberry Pi
+
+## Usage  
+--------
+*Here is where usage info will go once the application is finished*
+
+
+## Setting up the Raspberry Pi for SQL
+--------------------------------------
 Begin the setup by opening up a terminal window.  
 
 Make sure python 2 is installed.
@@ -82,3 +90,25 @@ Trace = No
 Servername = sqlserver
 Database = <Your DB name>
 ```
+
+## Setting up the Sensors 
+-------------------------
+
+### DHT 11 - Temperature and Humidity
+
+This one should be set up as long as the DHT11.py class file is not removed from the lib folder.
+
+### Temperature Sensor (Thermal Probe) - DS18B20
+
+In a terminal window:  
+```
+python3 -m pip install w1thermsensor
+sudo apt-get install python3-w1thermsensor
+
+cd /boot
+sudo leafpad config.txt
+```
+
+In the text editor, add in the line:  
+`dtoverlay=w1-gpio,gpiopin=<PIN#>`  
+replacing <PIN#> wiith the number of the pin you are using.
