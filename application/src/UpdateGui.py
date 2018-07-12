@@ -11,10 +11,12 @@ class UpdateGui (QWidget):
         self.dht_interval = 1
         self.probe_interval = 1
         self.current_interval = 1
+        self.rpm_interval = 1
         self.is_ready = False
         self.dht_pin_number = 3
         self.probe_pin_number = 3
         self.current_pin_number = 3
+        self.rpm_pin_number = 3
         
         self.setStyleSheet("""
             QComboBox[Test=true] {
@@ -32,6 +34,11 @@ class UpdateGui (QWidget):
                 background-color: #bbe66d;
                 color: #7934ef;
             }
+            QLabel[Test=true] {
+                text-decoration: underline;
+                font-weight: bold;
+                font-size: 20px;
+            }
 
 
         """)
@@ -40,12 +47,18 @@ class UpdateGui (QWidget):
 
     def initUi(self):
 
-        dht_label = QLabel('DHT Interval:')
+        dht_label = QLabel('DHT Sensor:')
         self.dht_value = QLabel('1')
-        probe_label = QLabel('Temp Probe Interval: ')
+        probe_label = QLabel('Thermal Probe Sensor: ')
         self.probe_value = QLabel('1')
-        current_label = QLabel('Current Interval: ')
+        current_label = QLabel('Current Sensor: ')
         self.current_value = QLabel('1')
+        rpm_label = QLabel('RPM Sensor:')
+        self.rpm_value = QLabel('1')
+        pressure_label = QLabel('Pressure Sensor')
+        self.pressure_value = QLabel('1')
+        flow_label = QLabel('Flow Sensor:')
+        self.flow_value = QLabel('1')
         
         dht_pin_label = QLabel('DHT Pin:')
         self.dht_pin = QLabel('3')
@@ -53,6 +66,21 @@ class UpdateGui (QWidget):
         self.probe_pin = QLabel('3')
         current_pin_label = QLabel('Current Pin: ')
         self.current_pin = QLabel('3')
+        rpm_pin_label = QLabel('RPM Pin:')
+        self.rpm_pin = QLabel('3')
+        pressure_pin_label = QLabel('Pressure Pin:')
+        self.pressure_pin = QLabel('3')
+        flow_pin_label = QLabel('Flow Pin:')
+        self.flow_pin = QLabel('3')
+        
+        sensor_column = QLabel('Sensors')
+        interval_column = QLabel('Interval of Measurement')
+        pin_column = QLabel('Pin Number')
+        
+        sensor_column.setProperty('Test', True)
+        interval_column.setProperty('Test', True)
+        pin_column.setProperty('Test', True)
+        
 
         # DHT Dropdown
         dhtintervalbox = QComboBox(self)
@@ -85,6 +113,34 @@ class UpdateGui (QWidget):
 
         currentintervalbox.activated[str].connect(self.onCurrentLabelChange)
         
+        rpmintervalbox = QComboBox(self)
+        rpmintervalbox.addItem("1")
+        rpmintervalbox.addItem("2")
+        rpmintervalbox.addItem("3")
+        rpmintervalbox.addItem("4")
+        rpmintervalbox.setProperty('Test', True)
+
+        rpmintervalbox.activated[str].connect(self.onRpmLabelChange)        
+        
+        pressureintervalbox = QComboBox(self)
+        pressureintervalbox.addItem("1")
+        pressureintervalbox.addItem("2")
+        pressureintervalbox.addItem("3")
+        pressureintervalbox.addItem("4")
+        pressureintervalbox.setProperty('Test', True)
+
+        pressureintervalbox.activated[str].connect(self.onPressureLabelChange)        
+
+        flowintervalbox = QComboBox(self)
+        flowintervalbox.addItem("1")
+        flowintervalbox.addItem("2")
+        flowintervalbox.addItem("3")
+        flowintervalbox.addItem("4")
+        flowintervalbox.setProperty('Test', True)
+
+        flowintervalbox.activated[str].connect(self.onFlowLabelChange)        
+
+
         self.pinlayout = QLabel(self)
         self.pinlayout.setPixmap(QPixmap('RPiPinLayout.png'))
         
@@ -117,42 +173,103 @@ class UpdateGui (QWidget):
         current_pin_box.setProperty('Test', True)
         
         current_pin_box.activated[str].connect(self.onCurrentPinChange)
+
+        rpm_pin_box = QComboBox(self)
+        rpm_pin_box.addItem("3")
+        rpm_pin_box.addItem("5")
+        rpm_pin_box.addItem("8")
+        rpm_pin_box.addItem("10")
+        rpm_pin_box.addItem("18")
+        rpm_pin_box.setProperty('Test', True)
         
+        rpm_pin_box.activated[str].connect(self.onRpmPinChange)
+        
+        pressure_pin_box = QComboBox(self)
+        pressure_pin_box.addItem("3")
+        pressure_pin_box.addItem("5")
+        pressure_pin_box.addItem("8")
+        pressure_pin_box.addItem("10")
+        pressure_pin_box.addItem("18")
+        pressure_pin_box.setProperty('Test', True)
+        
+        pressure_pin_box.activated[str].connect(self.onPressurePinChange)
+
+        flow_pin_box = QComboBox(self)
+        flow_pin_box.addItem("3")
+        flow_pin_box.addItem("5")
+        flow_pin_box.addItem("8")
+        flow_pin_box.addItem("10")
+        flow_pin_box.addItem("18")
+        flow_pin_box.setProperty('Test', True)
+        
+        flow_pin_box.activated[str].connect(self.onFlowPinChange)
+
         self.submit_btn = QPushButton("Submit", self)
         self.submit_btn.resize(100,50)
         self.submit_btn.setProperty('Test', True)
         self.submit_btn.clicked.connect(self.buttonClick)
 
         grid = QGridLayout()
-        grid.setSpacing(1)
-
+        grid.setSpacing(10)
+        
+        
+        grid.addWidget(sensor_column, 0, 2)
+        grid.addWidget(interval_column, 0, 3)
+        grid.addWidget(pin_column, 0, 4)
+        
         grid.addWidget(dht_label, 1, 2)
-        grid.addWidget(self.dht_value, 1, 3)
-        grid.addWidget(dhtintervalbox, 1, 4)
+        #grid.addWidget(self.dht_value, 1, 2)
+        grid.addWidget(dhtintervalbox, 1, 3)
+        
+        #grid.addWidget(dht_pin_label, 1, 5)
+        #grid.addWidget(self.dht_pin, 1, 4)
+        grid.addWidget(dht_pin_box, 1, 4)
         
         grid.addWidget(probe_label, 2, 2)
-        grid.addWidget(self.probe_value, 2, 3)
-        grid.addWidget(probeintervalbox, 2, 4)
+        #grid.addWidget(self.probe_value, 2, 2)
+        grid.addWidget(probeintervalbox, 2, 3)
+        
+        #grid.addWidget(probe_pin_label, 2, 5)
+        #grid.addWidget(self.probe_pin, 2, 4)
+        grid.addWidget(probe_pin_box, 2, 4)        
         
         grid.addWidget(current_label, 3, 2)
-        grid.addWidget(self.current_value, 3, 3)
-        grid.addWidget(currentintervalbox, 3, 4)
+        #grid.addWidget(self.current_value, 3, 2)
+        grid.addWidget(currentintervalbox, 3, 3)
         
-        grid.addWidget(dht_pin_label, 4, 2)
-        grid.addWidget(self.dht_pin, 4, 3)
-        grid.addWidget(dht_pin_box, 4, 4)
+        #grid.addWidget(current_pin_label, 3, 5)
+        #grid.addWidget(self.current_pin, 3, 4)
+        grid.addWidget(current_pin_box, 3, 4)        
         
-        grid.addWidget(probe_pin_label, 5, 2)
-        grid.addWidget(self.probe_pin, 5, 3)
-        grid.addWidget(probe_pin_box, 5, 4)
+        grid.addWidget(rpm_label, 4, 2)
+        #grid.addWidget(self.rpm_value, 4, 2)
+        grid.addWidget(rpmintervalbox, 4, 3)   
         
-        grid.addWidget(current_pin_label, 6, 2)
-        grid.addWidget(self.current_pin, 6, 3)
-        grid.addWidget(current_pin_box, 6, 4)
+        #grid.addWidget(rpm_pin_label, 4, 5)
+        #grid.addWidget(self.rpm_pin, 4, 4)
+        grid.addWidget(rpm_pin_box, 4, 4)
+        
+        grid.addWidget(pressure_label, 5, 2)
+        #grid.addWidget(self.pressure_value, 5, 2)
+        grid.addWidget(pressureintervalbox, 5, 3)        
+
+        #grid.addWidget(pressure_pin_label, 5, 5)
+        #grid.addWidget(self.pressure_pin, 5, 4)
+        grid.addWidget(pressure_pin_box, 5, 4)
+        
+        grid.addWidget(flow_label, 6, 2)
+        #grid.addWidget(self.flow_value, 6, 2)
+        grid.addWidget(flowintervalbox, 6, 3)  
+
+        #grid.addWidget(flow_pin_label, 6, 5)
+        #grid.addWidget(self.flow_pin, 6, 4)
+        grid.addWidget(flow_pin_box, 6, 4)
+
+
         
         grid.addWidget(self.submit_btn, 7, 3)
         
-        grid.addWidget(self.pinlayout, 5, 1, -1, 1)
+        grid.addWidget(self.pinlayout, 1, 1, -1, 1)
         #self.pinlayout.setScaledContents(True)
         
         self.setLayout(grid)
@@ -176,6 +293,21 @@ class UpdateGui (QWidget):
         self.current_value.setText(text)
         self.current_value.adjustSize()
         self.current_interval = int(text)
+    
+    def onRpmLabelChange(self, text):
+        self.rpm_value.setText(text)
+        self.rpm_value.adjustSize()
+        self.rpm_interval = int(text)
+        
+    def onPressureLabelChange(self, text):
+        self.pressure_value.setText(text)
+        self.pressure_value.adjustSize()
+        self.pressure_interval = int(text)        
+
+    def onFlowLabelChange(self, text):
+        self.flow_value.setText(text)
+        self.flow_value.adjustSize()
+        self.flow_interval = int(text)
         
     def onDHTPinChange(self, text):
         self.dht_pin.setText(text)
@@ -191,7 +323,22 @@ class UpdateGui (QWidget):
         self.current_pin.setText(text)
         self.current_pin.adjustSize()
         self.current_pin_number = int(text)
+    
+    def onRpmPinChange(self, text):
+        self.rpm_pin.setText(text)
+        self.rpm_pin.adjustSize()
+        self.rpm_pin_number = int(text)
+
+    def onPressurePinChange(self, text):
+        self.pressure_pin.setText(text)
+        self.pressure_pin.adjustSize()
+        self.pressure_pin_number = int(text)
         
+    def onFlowPinChange(self, text):
+        self.flow_pin.setText(text)
+        self.flow_pin.adjustSize()
+        self.flow_pin_number = int(text)
+
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
@@ -220,12 +367,25 @@ class UpdateGui (QWidget):
         return float(probe_interval)
     def getCurrentInterval():
         return float(current_interval)
+    def getRpmInterval():
+        return float(rpm_interval)
+    def getPressureInterval():
+        return float(pressure_interval)
+    def getFlowInterval():
+        return float(flow_interval)
+    
     def getDHTPin():
         return float(dht_pin_number)
     def getProbePin():
         return float(probe_pin_number)
     def getCurrentPin():
         return float(current_pin_number)
+    def getRpmPin():
+        return float(rpm_pin_number)
+    def getPressurePin():
+        return float(pressure_pin_number)
+    def getFlowPin():
+        return float(flow_pin_number)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
