@@ -10,7 +10,6 @@ import sys
 import socket
 import pickle
 import os
-from PyQt5.QtWidgets import QApplication
 
 #import json
 #import urllib2
@@ -193,19 +192,11 @@ current_time = int(time.mktime(dt.datetime.now().timetuple()))
 
 objects =[]
 
-
-app = QApplication(sys.argv)
-
-screen = app.primaryScreen()
-screenSize = screen.size()
-
-gui = graphic.UpdateGui(screenSize.width()/2, screenSize.height()/2)
-sys.exit(app.exec_())
-
-while(not gui.is_ready):
-    pass
-
-
+graphic = gui.GraphicInterface()
+graphic.createwindow()
+#once the GUI submit button has been pressed
+while(not graphic.is_Ready):
+    time.sleep(0.5)
 
 # Setting up the Raspberry Pi
 GPIO.setwarnings(False)
