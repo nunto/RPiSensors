@@ -94,6 +94,35 @@ Database = <Your DB name>
 ## Setting up the Sensors 
 -------------------------
 
+### For Data Storage
+
+HDF5 is used for the local storage. Download the hdf5 tar.gz file (We used version 1.8.21).
+
+
+Open a terminal window and navigate to the directory of the .tar.gz file:
+```
+tar -zxf hdf5.<X.Y.Z>.tar.gz  NOTE: replace with your filename
+cd hdf5.X.Y.Z
+./configure --prefix=/usr/local/hdf5
+make
+sudo make install
+
+sudo apt-get update
+sudo apt-get install libhdf5-dev
+sudo apt-get update
+sudo apt-get install libhdf5-serial-dev
+
+cd /etc/ld.so.conf.d
+sudo leafpad locallibs.conf
+```
+In your texteditor type: 
+`/usr/local/` then save and exit
+
+```
+sudo ldconfig
+python3 -m pip install tables
+```
+
 ### DHT 11 - Temperature and Humidity
 
 This one should be set up as long as the DHT11.py class file is not removed from the lib folder.
@@ -111,4 +140,4 @@ sudo leafpad config.txt
 
 In the text editor, add in the line:  
 `dtoverlay=w1-gpio,gpiopin=<PIN#>`  
-replacing <PIN#> wiith the number of the pin you are using.
+replacing <PIN#> with the number of the pin you are using.
