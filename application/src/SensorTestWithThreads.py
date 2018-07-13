@@ -10,29 +10,35 @@ import sys
 import socket
 import pickle
 import os
+from PyQt5.QtWidgets import QApplication
 
 #import json
 #import urllib2
 
-#Thread Classes setup 
+#Thread Classes setup
+
+#Connection Test Thread Defined
 class ConnectionCheckThread (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
     def run(self):
         connectiontest()
 
+#Online send class thread defined        
 class SQLSendThread (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
     def run(self):
         OnlineDump()
-        
+
+#Offline send thread
 class LocalDataDump (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
     def run(self):
         OfflineDump()
 
+#Connection Test Thread Initialization
 def connectiontest():
     global is_connected
     while 1:
@@ -192,11 +198,19 @@ current_time = int(time.mktime(dt.datetime.now().timetuple()))
 
 objects =[]
 
-graphic = gui.GraphicInterface()
-graphic.createwindow()
-#once the GUI submit button has been pressed
-while(not graphic.is_Ready):
-    time.sleep(0.5)
+
+app = QApplication(sys.argv)
+
+screen = app.primaryScreen()
+screenSize = screen.size()
+
+gui = graphic.UpdateGui(screenSize.width()/2, screenSize.height()/2)
+sys.exit(app.exec_())
+
+while(not gui.is_ready):
+    pass
+
+
 
 # Setting up the Raspberry Pi
 GPIO.setwarnings(False)

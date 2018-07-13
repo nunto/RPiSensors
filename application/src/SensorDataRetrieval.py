@@ -5,14 +5,15 @@ from w1thermsensor import W1ThermSensor
 
 # @brief Reads data from the different sensors
 class SensorDataRetrieval:
-    def __init__(self):
+    def __init__(self, dht_pin: int, thermal_pin:int, rpm_pin:int, current_pin:int, pressure_pin:int, flow_pin:int):
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.cleanup
 
-        self.dht_sensor = DHT11.DHT11(pin=14)
+        self.dht_sensor = DHT11.DHT11(pin=dht_pin)
         self.thermal_sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20)
-
+        #add in other sensor objects where the pin is the one passed to the method
+        #need to add the overwriting of temperature probe in file
     ## @brief Gets the data from the dht sensor
     #  @return An array, [Temp, Humidity]
     def dht_reading(self) -> list:
@@ -35,15 +36,15 @@ class SensorDataRetrieval:
     ## @brief Gets the data from the infrared sensor 
     # @return Revolutions per minute based on how often the beam breaks
     def infrared_rpm_reading(self) -> float:
-            current_time = dt.datetime.now()
-            #change this to be the pin on which the sensor is on from the GUI
-            while GPIO.input(18):
-                pass
-            difference = dt.datetime.now() - current_time
-            current_time() = dt.datetime.now()
-            # be sure to ask about a difference in machines with holes and input field?
-            milliseconds = (difference.days * 24 * 60 * 60 + difference.seconds) * 1000 + difference.microseconds / 1000.0
-            rpm = (1000/milliseconds)*60
-            return rpm
+        current_time = dt.datetime.now()
+        #change this to be the pin on which the sensor is on from the GUI
+        while GPIO.input(rpm_pin):
+            pass
+        difference = dt.datetime.now() - current_time
+        current_time = dt.datetime.now()
+        # be sure to ask about a difference in machines with holes and input field?
+        milliseconds = (difference.days * 24 * 60 * 60 + difference.seconds) * 1000 + difference.microseconds / 1000.0
+        rpm = (1000/milliseconds)*60
+        return rpm
             
                 
