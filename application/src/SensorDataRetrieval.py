@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import DHT11
 from w1thermsensor import W1ThermSensor
-
+import datetime as dt
 
 # @brief Reads data from the different sensors
 class SensorDataRetrieval:
@@ -9,7 +9,7 @@ class SensorDataRetrieval:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.cleanup
-
+        self.rpm_pin = rpm_pin
         self.dht_sensor = DHT11.DHT11(pin=dht_pin)
         self.thermal_sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20)
         #add in other sensor objects where the pin is the one passed to the method
@@ -37,8 +37,9 @@ class SensorDataRetrieval:
     # @return Revolutions per minute based on how often the beam breaks
     def infrared_rpm_reading(self) -> float:
         current_time = dt.datetime.now()
+        GPIO.setup(self.rpm_pin , GPIO.IN, pull_up_down=GPIO.PUD_UP)
         #change this to be the pin on which the sensor is on from the GUI
-        while GPIO.input(rpm_pin):
+        while GPIO.input(self.rpm_pin):
             pass
         difference = dt.datetime.now() - current_time
         current_time = dt.datetime.now()

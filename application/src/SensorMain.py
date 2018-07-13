@@ -17,13 +17,13 @@ def dht_process(sdr, ds, status: bool):
     print('in dht_process')
     dht_data = sdr.dht_reading()
     timestamp = current_time()
-    temp = int(dht_data[0])
+    temp = float(dht_data[0])
     hum = int(dht_data[1])
 
     if (status):
-        ds.SQL_insert(timestamp, temp, hum)
+        ds.SQL_insert("'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
     else:
-        ds.offline_save(timestamp, temp, hum)
+        ds.offline_save("'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
 
 
 def thermal_process(sdr, ds, status:bool):
@@ -31,9 +31,9 @@ def thermal_process(sdr, ds, status:bool):
     thermal_data = sdr.thermal_probe_reading()
     timestamp = current_time()
     if(status):
-       ds.SQL_insert()
+       ds.SQL_insert("'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
     else:
-        ds.offline_save()
+        ds.offline_save("'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
 
 def rpm_process(sdr, ds, status:bool):
     print('in rpm process')
@@ -41,9 +41,9 @@ def rpm_process(sdr, ds, status:bool):
     timestamp = current_time()
     #need to change these methods to accept all the different return values of sensor data
     if(status):
-        ds.SQL_insert()
+        ds.SQL_insert("'RPM Sensor'", timestamp, 0.0, 0.0, rpm_data, 0.0, 0.0, 0.0)
     else:
-        ds.offline_save()
+        ds.offline_save("'RPM Sensor'", timestamp, 0.0, 0.0, rpm_data, 0.0, 0.0, 0.0)
         
 if (__name__ == '__main__'):
         
@@ -131,5 +131,3 @@ if (__name__ == '__main__'):
         
                 
         dht_thread.join()
-        thermal_thread.join()
-        rpm_thread.join()

@@ -149,60 +149,60 @@ class UpdateGui (QWidget):
         self.pinlayout.setPixmap(QPixmap('RPiPinLayout.png'))
         
         dht_pin_box = QComboBox(self)
+        dht_pin_box.addItem("2")
         dht_pin_box.addItem("3")
-        dht_pin_box.addItem("5")
-        dht_pin_box.addItem("8")
-        dht_pin_box.addItem("10")
+        dht_pin_box.addItem("14")
+        dht_pin_box.addItem("15")
         dht_pin_box.addItem("18")
         dht_pin_box.setProperty('Test', True)
         
         dht_pin_box.activated[str].connect(self.onDHTPinChange)
-        
+        #Change these to be actual GPIO pins
         probe_pin_box = QComboBox(self)
+        probe_pin_box.addItem("2")
         probe_pin_box.addItem("3")
-        probe_pin_box.addItem("5")
-        probe_pin_box.addItem("8")
-        probe_pin_box.addItem("10")
+        probe_pin_box.addItem("14")
+        probe_pin_box.addItem("15")
         probe_pin_box.addItem("18")
         probe_pin_box.setProperty('Test', True)
         
         probe_pin_box.activated[str].connect(self.onProbePinChange)
         
         current_pin_box = QComboBox(self)
+        current_pin_box.addItem("2")
         current_pin_box.addItem("3")
-        current_pin_box.addItem("5")
-        current_pin_box.addItem("8")
-        current_pin_box.addItem("10")
+        current_pin_box.addItem("14")
+        current_pin_box.addItem("15")
         current_pin_box.addItem("18")
         current_pin_box.setProperty('Test', True)
         
         current_pin_box.activated[str].connect(self.onCurrentPinChange)
 
         rpm_pin_box = QComboBox(self)
+        rpm_pin_box.addItem("2")
         rpm_pin_box.addItem("3")
-        rpm_pin_box.addItem("5")
-        rpm_pin_box.addItem("8")
-        rpm_pin_box.addItem("10")
+        rpm_pin_box.addItem("14")
+        rpm_pin_box.addItem("15")
         rpm_pin_box.addItem("18")
         rpm_pin_box.setProperty('Test', True)
         
         rpm_pin_box.activated[str].connect(self.onRpmPinChange)
         
         pressure_pin_box = QComboBox(self)
+        pressure_pin_box.addItem("2")
         pressure_pin_box.addItem("3")
-        pressure_pin_box.addItem("5")
-        pressure_pin_box.addItem("8")
-        pressure_pin_box.addItem("10")
+        pressure_pin_box.addItem("14")
+        pressure_pin_box.addItem("15")
         pressure_pin_box.addItem("18")
         pressure_pin_box.setProperty('Test', True)
         
         pressure_pin_box.activated[str].connect(self.onPressurePinChange)
 
         flow_pin_box = QComboBox(self)
+        flow_pin_box.addItem("2")
         flow_pin_box.addItem("3")
-        flow_pin_box.addItem("5")
-        flow_pin_box.addItem("8")
-        flow_pin_box.addItem("10")
+        flow_pin_box.addItem("14")
+        flow_pin_box.addItem("15")
         flow_pin_box.addItem("18")
         flow_pin_box.setProperty('Test', True)
         
@@ -397,17 +397,17 @@ class UpdateGui (QWidget):
         return float(self.flow_interval)
     
     def getDHTPin(self):
-        return float(self.dht_pin_number)
+        return int(self.dht_pin_number)
     def getProbePin(self):
-        return float(self.probe_pin_number)
+        return int(self.probe_pin_number)
     def getCurrentPin(self):
-        return float(self.current_pin_number)
+        return int(self.current_pin_number)
     def getRpmPin(self):
-        return float(self.rpm_pin_number)
+        return int(self.rpm_pin_number)
     def getPressurePin(self):
-        return float(self.pressure_pin_number)
+        return int(self.pressure_pin_number)
     def getFlowPin(self):
-        return float(self.flow_pin_number)
+        return int(self.flow_pin_number)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
