@@ -43,7 +43,7 @@ class NavBar extends Component {
                         />
 
                         <Menu.Menu position='right'>
-                            <Menu.Item name="logout" active={activeItem === "logout"} onClick={this._handleItemClick} />
+                            <Menu.Item as={NavLink} to='/login' name="login" active={activeItem === "logout"} onClick={this._handleItemClick} />
                         </Menu.Menu>
                     </Menu>
                 </div>

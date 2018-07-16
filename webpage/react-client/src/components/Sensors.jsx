@@ -5,13 +5,22 @@ class Sensors extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: [],
             options: {
                 title: 'Time vs Temperature',
-                hAxis: {title: 'Time', minValue: 1530818425, maxValue: 1530817930 },
-                vAxis: {title: 'Temperature', minValue: 20, maxValue: 30},
+                hAxis: {title: 'Time'},
+                vAxis: {title: 'Temperature'},
                 legend: 'none'
             },
+            columns: [
+                {
+                    type: 'number',
+                    label: 'Time'
+                },
+                {
+                    type: 'number',
+                    label: 'Temperature'
+                }
+            ]
         }
     }
     
@@ -20,7 +29,9 @@ class Sensors extends Component {
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson)
-            this.setState({ data: responseJson })
+            var rows = JSON.parse(responseJson)
+            this.setState({ data: rows })
+
         })
 
         console.log(this.state.data)
@@ -29,15 +40,16 @@ class Sensors extends Component {
     render () {
         return (
             <div>
-                <p>Response: {this.state.response}</p>
+                <p>Response: {this.state.rows} ---- {this.state.data}</p>
                 <Chart
                     chartType="LineChart"
-                    data={this.state.data}
+                    rows={this.state.data}
+                    columns={this.state.columns}
                     options={this.state.options}
                     graph_id="LineChart"
                     width="1000px"
                     height="400px"
-                    legend_toggle 
+                    legend_toggle
                 />   
             </div>
         )
