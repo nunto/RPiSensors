@@ -27,11 +27,10 @@ class DataStorage:
     #  @param timestamp Current time data was sent
     #  @param temp Temperature reading
     #  @param humidity Humidity reading
-    def SQL_insert(self, sensortype: str, timestamp: int, temp: float, humidity: int, rpm: float, amperage: float, pressure: float, flow: float):
-        cnxn = pyodbc.connect(DataStorage.cnxn_string)
+    def SQL_insert(self, connection_string:str, tablename:str, sensortype: str, timestamp: int, temp: float, humidity: int, rpm: float, amperage: float, pressure: float, flow: float):
+        cnxn = pyodbc.connect(connection_string)
         cursor = cnxn.cursor()
-        query = 'INSERT INTO MachineSensorData(SensorID, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow) values (%s, %d, %f, %d, %f, %f, %f, %f)' % (sensortype, timestamp, temp, humidity, rpm, amperage, pressure, flow)
-        print(query)
+        query = 'INSERT INTO ' + tablename + '(SensorID, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow) values (%s, %d, %f, %d, %f, %f, %f, %f)' % (sensortype, timestamp, temp, humidity, rpm, amperage, pressure, flow)
         cursor.execute(query)
         cnxn.commit()
 
@@ -48,7 +47,7 @@ class DataStorage:
         f.close()
         
     ## @brief Syncs locally saved data with the SQL Server database
-    def data_sync(self):
+    def data_sync(self, connection_string:str, tablename:str):
         print('Syncing data')
 
         if (os.path.exists(DataStorage.SAVEFILE)):
@@ -59,10 +58,10 @@ class DataStorage:
         # Insert each locally stored array into SQL
         for i in range(len(sync_data)):
             print(i)
-            cnxn = pyodbc.connect(DataStorage.cnxn_string)
+            cnxn = pyodbc.connect(connection_string)
             cursor = cnxn.cursor()
             print(sync_data[i])
-            query = 'INSERT INTO SensorValues(SensorType, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow) values (%s, %d, %f, %d, %f, %f, %f, %f)' % (sync_data[i][0], sync_data[i][1], sync_data[i][2], sync_data[i][3], sync_data[i][4], sync_data[i][5], sync_data[i][6], sync_data[i][7])
+            query = 'INSERT INTO ' + tablename + '(SensorType, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow) values (%s, %d, %f, %d, %f, %f, %f, %f)' % (sync_data[i][0], sync_data[i][1], sync_data[i][2], sync_data[i][3], sync_data[i][4], sync_data[i][5], sync_data[i][6], sync_data[i][7])
             cursor.execute(query)
             cnxn.commit()
 

@@ -21,7 +21,7 @@ def dht_process(sdr, ds, status: bool):
     hum = int(dht_data[1])
 
     if (status):
-        ds.SQL_insert("'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
+        ds.SQL_insert(connect_string, tablename, "'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
     else:
         ds.offline_save("'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
 
@@ -31,7 +31,7 @@ def thermal_process(sdr, ds, status:bool):
     thermal_data = sdr.thermal_probe_reading()
     timestamp = current_time()
     if(status):
-       ds.SQL_insert("'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
+       ds.SQL_insert(connect_string, tablename, "'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
     else:
         ds.offline_save("'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
 
@@ -41,7 +41,7 @@ def rpm_process(sdr, ds, status:bool):
     timestamp = current_time()
     #need to change these methods to accept all the different return values of sensor data
     if(status):
-        ds.SQL_insert("'RPM Sensor'", timestamp, 0.0, 0.0, rpm_data, 0.0, 0.0, 0.0)
+        ds.SQL_insert(connect_string, tablename, "'RPM Sensor'", timestamp, 0.0, 0.0, rpm_data, 0.0, 0.0, 0.0)
     else:
         ds.offline_save("'RPM Sensor'", timestamp, 0.0, 0.0, rpm_data, 0.0, 0.0, 0.0)
         
@@ -52,7 +52,7 @@ if (__name__ == '__main__'):
     screen = app2.primaryScreen()
     screenSize = screen.size()
     
-    gui = ConfigGui(screenSize.width()/2, screenSize.height()/2)
+    config_gui = ConfigGui(screenSize.width()/2, screenSize.height()/2)
     #sys.exit(app.exec_())
     app2.exec_()
     
@@ -61,17 +61,18 @@ if (__name__ == '__main__'):
     screen = app.primaryScreen()
     screenSize = screen.size()
     
-    gui = UpdateGui(screenSize.width()/2, screenSize.height()/2)
+    update_gui = UpdateGui(screenSize.width()/2, screenSize.height()/2)
     #sys.exit(app.exec_())
     app.exec_()
 
-    dht_interval = gui.getDHTInterval() # Get this from GUI later
-    thermal_interval = gui.getProbeInterval()
-    current_interval = gui.getCurrentInterval()
-    rpm_interval = gui.getRpmInterval()
-    pressure_interval = gui.getPressureInterval()
-    flow_interval = gui.getFlowInterval()
-    
+    dht_interval = update_gui.getDHTInterval() # Get this from GUI later
+    thermal_interval = update_gui.getProbeInterval()
+    current_interval = update_gui.getCurrentInterval()
+    rpm_interval = update_gui.getRpmInterval()
+    pressure_interval = update_gui.getPressureInterval()
+    flow_interval = update_gui.getFlowInterval()
+    connect_string = config_gui.cnxn_string
+    tablename = config_gui.tablename 
     # Other intervals here---
     #---
     
@@ -81,7 +82,7 @@ if (__name__ == '__main__'):
     rpm_last_update = 0
 
     # Instantiating relevant sensor objects
-    sdr = SensorDataRetrieval(gui.getDHTPin(), gui.getProbePin(), gui.getRpmPin(), gui.getCurrentPin(), gui.getPressurePin(), gui.getFlowPin() )
+    sdr = SensorDataRetrieval(update_gui.getDHTPin(), update_gui.getProbePin(), update_gui.getRpmPin(), update_gui.getCurrentPin(), update_gui.getPressurePin(), update_gui.getFlowPin() )
     ds = DataStorage()
     ch = ConnectionHandler()
 
@@ -90,7 +91,7 @@ if (__name__ == '__main__'):
         if (ch.is_connected()):
             print('connected')
             if (is_local_data):
-                ds.data_sync()
+                ds.data_sync(connect_string, tablename)
                 is_local_data = False
 
             if (dht_last_update + dht_interval <= current_time()):
