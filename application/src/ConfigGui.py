@@ -35,6 +35,7 @@ class ConfigGui (QWidget):
         self.dataBase = QLineEdit(self)
         self.userLogin = QLineEdit(self)
         self.userPassword = QLineEdit(self)
+        self.userPassword.setEchoMode(QLineEdit.Password)
         self.tableName = QLineEdit(self)
         
         if(os.path.exists('configuration.pickle') and os.path.getsize('configuration.pickle') > 0):

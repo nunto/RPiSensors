@@ -16,8 +16,9 @@ class SensorDataRetrieval:
         #need to add the overwriting of temperature probe in file
     ## @brief Gets the data from the dht sensor
     #  @return An array, [Temp, Humidity]
-    def dht_reading(self) -> list:
-        dht_data = self.dht_sensor.read()
+    @classmethod
+    def dht_reading(cls, dht_sensor) -> list:
+        dht_data = dht_sensor.read()
         if (dht_data.is_valid()):
             dht_array = [dht_data.temperature, dht_data.humidity]
             return dht_array
@@ -29,23 +30,42 @@ class SensorDataRetrieval:
 
     ## @brief Gets the data from the thermal temperature sensor
     #  @return Temperature in degrees celsius
-    def thermal_probe_reading(self) -> float:
-        temp_cel = self.thermal_sensor.get_temperature(W1ThermSensor.DEGREES_C)
+    @classmethod
+    def thermal_probe_reading(cls, thermal_sensor) -> float:
+        temp_cel = thermal_sensor.get_temperature(W1ThermSensor.DEGREES_C)
         return temp_cel
     
     ## @brief Gets the data from the infrared sensor 
     # @return Revolutions per minute based on how often the beam breaks
-    def infrared_rpm_reading(self) -> float:
+    @classmethod
+    def infrared_rpm_reading(cls, rpm_pin) -> float:
         current_time = dt.datetime.now()
-        GPIO.setup(self.rpm_pin , GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(rpm_pin , GPIO.IN, pull_up_down=GPIO.PUD_UP)
         #change this to be the pin on which the sensor is on from the GUI
-        while GPIO.input(self.rpm_pin):
-            pass
-        difference = dt.datetime.now() - current_time
-        current_time = dt.datetime.now()
+        if(GPIO.input(rpm_pin)):
+            while GPIO.input(rpm_pin):
+                pass
+            current_time = dt.datetime.now()
+            while not GPIO.input(rpm_pin):
+                pass
+            while GPIO.input(rpm_pin):
+                pass
+            difference = dt.datetime.now() - current_time
+        else:
+            while not GPIO.input(rpm_pin):
+                pass
+            current_time = dt.datetime.now()
+            while GPIO.input(rpm_pin):
+                pass
+            while not GPIO.input(rpm_pin):
+                pass
+            difference = dt.datetime.now() - current_time
         # be sure to ask about a difference in machines with holes and input field?
         milliseconds = (difference.days * 24 * 60 * 60 + difference.seconds) * 1000 + difference.microseconds / 1000.0
+        print(dt.datetime.now())
+        print(current_time)
         rpm = (1000/milliseconds)*60
+        print(rpm)
         return rpm
             
                 

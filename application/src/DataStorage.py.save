@@ -28,8 +28,8 @@ class DataStorage:
     #  @param temp Temperature reading
     #  @param humidity Humidity reading
     def SQL_insert(self, connection_string:str, tablename:str, sensortype: str, timestamp: int, temp: float, humidity: int, rpm: float, amperage: float, pressure: float, flow: float):
-        cnxn = pyodbc.connect(connection_string)
-        #print("Temp: " + str(temp) + "\nHumidity: " + str(humidity) + "\nrpm: " + str(rpm) + "\namperage: " + str(amperage) + "\npressure: " + str(pressure) + "\nflow: " + str(flow))
+        
+icnxn = pyodbc.connect(connection_string)
         cursor = cnxn.cursor()
         query = 'INSERT INTO ' + tablename + '(SensorID, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow) values (%s, %d, %f, %d, %f, %f, %f, %f)' % (sensortype, timestamp, temp, humidity, rpm, amperage, pressure, flow)
         cursor.execute(query)

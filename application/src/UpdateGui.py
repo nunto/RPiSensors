@@ -363,22 +363,16 @@ class UpdateGui (QWidget):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-    
-    def closeEvent(self, event):
-        reply = QMessageBox.question(self, 'Message', 'Are you sure you wish to quit?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
-        if reply == QMessageBox.Yes:
-            is_ready = True
-            event.accept()
-        else:
-            event.ignore()
     
     def submitButtonClick(self):
         print("Button clicked")
         print(str(self.dht_pin_number))
         print(str(self.probe_pin_number))
         print(str(self.current_pin_number)) 
+        self.is_ready = True
         self.close()
+        
     
     def sensorButtonClick(self):
         pass

@@ -3,7 +3,7 @@ from threading import Thread
 from SensorDataRetrieval import SensorDataRetrieval
 from DataStorage import DataStorage
 from ConnectionHandler import ConnectionHandler
-from UpdateGui import UpdateGui
+from UpdateGuiTestFile import UpdateGui
 from ConfigGui import ConfigGui
 from datetime import datetime
 from PyQt5.QtWidgets import QApplication
@@ -13,9 +13,9 @@ import sys
 def current_time() -> int:
     return int(time.mktime(datetime.now().timetuple()))
 
-def dht_process(sdr, ds, status: bool):
+def dht_process(sensor, ds, status: bool):
     print('in dht_process')
-    dht_data = sdr.dht_reading()
+    dht_data = SensorDataRetrieval.dht_reading(sensor)
     timestamp = current_time()
     temp = float(dht_data[0])
     hum = int(dht_data[1])
@@ -26,18 +26,19 @@ def dht_process(sdr, ds, status: bool):
         ds.offline_save("'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
 
 
-def thermal_process(sdr, ds, status:bool):
+def thermal_process(sensor, ds, status:bool):
     print('in thermal process')
-    thermal_data = sdr.thermal_probe_reading()
+    thermal_data = SensorDataRetrieval.thermal_probe_reading(sensor)
     timestamp = current_time()
+    
     if(status):
        ds.SQL_insert(connect_string, tablename, "'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
     else:
         ds.offline_save("'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
 
-def rpm_process(sdr, ds, status:bool):
+def rpm_process(pin, ds, status:bool):
     print('in rpm process')
-    rpm_data = sdr.infrared_rpm_reading()
+    rpm_data = SensorDataRetrieval.infrared_rpm_reading(pin)
     timestamp = current_time()
     #need to change these methods to accept all the different return values of sensor data
     if(status):
@@ -64,13 +65,13 @@ if (__name__ == '__main__'):
     update_gui = UpdateGui(screenSize.width()/2, screenSize.height()/2)
     #sys.exit(app.exec_())
     app.exec_()
+    if(not update_gui.is_ready):
+        sys.exit()
 
-    dht_interval = update_gui.getDHTInterval() # Get this from GUI later
-    thermal_interval = update_gui.getProbeInterval()
-    current_interval = update_gui.getCurrentInterval()
-    rpm_interval = update_gui.getRpmInterval()
-    pressure_interval = update_gui.getPressureInterval()
-    flow_interval = update_gui.getFlowInterval()
+    sensor_list = update_gui.SensorObjectList
+    
+    
+    
     connect_string = config_gui.cnxn_string
     tablename = config_gui.tablename 
     # Other intervals here---
@@ -82,50 +83,52 @@ if (__name__ == '__main__'):
     rpm_last_update = 0
 
     # Instantiating relevant sensor objects
-    sdr = SensorDataRetrieval(update_gui.getDHTPin(), update_gui.getProbePin(), update_gui.getRpmPin(), update_gui.getCurrentPin(), update_gui.getPressurePin(), update_gui.getFlowPin() )
+    #sdr = SensorDataRetrieval(update_gui.getDHTPin(), update_gui.getProbePin(), update_gui.getRpmPin(), update_gui.getCurrentPin(), update_gui.getPressurePin(), update_gui.getFlowPin() )
     ds = DataStorage()
     ch = ConnectionHandler()
 
     # TODO: Add a check for each sensor time, only insert if it is time for them
     while (True):
         if (ch.is_connected()):
-            print('connected')
             if (is_local_data):
                 ds.data_sync(connect_string, tablename)
                 is_local_data = False
-
-            if (dht_last_update + dht_interval <= current_time()):
-                dht_last_update = current_time()
-                dht_thread = Thread(target = dht_process, args=(sdr, ds, True))
-                dht_thread.start()
-            
-            if (thermal_last_update + thermal_interval <= current_time()):
-                thermal_last_update = current_time()
-                thermal_thread = Thread(target = thermal_process, args=(sdr, ds, True))
-                thermal_thread.start()
-            
-            if (rpm_last_update + rpm_interval <= current_time()):
-                rpm_last_update = current_time()
-                rpm_thread = Thread(target = rpm_process, args=(sdr, ds, True))
-                rpm_thread.start()
+            for sensor in sensor_list:
+                if(sensor.getType() == 0):
+                    if (dht_last_update + sensor.getInterval() <= current_time()):
+                        dht_last_update = current_time()
+                        dht_thread = Thread(target = dht_process, args=(sensor.dht_sensor, ds, True))
+                        dht_thread.start()
+                elif(sensor.getType() == 1):   
+                    if (thermal_last_update + sensor.getInterval() <= current_time()):
+                        thermal_last_update = current_time()
+                        thermal_thread = Thread(target = thermal_process, args=(sensor.thermal_sensor, ds, True))
+                        thermal_thread.start()
+                elif(sensor.getType() == 2):
+                    if (rpm_last_update + sensor.getInterval() <= current_time()):
+                        rpm_last_update = current_time()
+                        rpm_thread = Thread(target = rpm_process, args=(sensor.getPin(), ds, True))
+                        rpm_thread.start()
 
         else:
             print('not connected')
             # Save locally
-            if (dht_last_update + dht_interval <= current_time()):
-                dht_last_update = current_time()
-                dht_thread = Thread(target = dht_process, args=(sdr, ds, False))
-                dht_thread.start()
-            
-            if (thermal_last_update + thermal_interval <= current_time()):
-                thermal_last_update = current_time()
-                thermal_thread = Thread(target = thermal_process, args=(sdr, ds, False))
-                thermal_thread.start()
-            
-            if (rpm_last_update + rpm_interval <= current_time()):
-                rpm_last_update = current_time()
-                rpm_thread = Thread(target = rpm_process, args=(sdr, ds, False))
-                rpm_thread.start()
+            for sensor in sensor_list:
+                if(sensor.getType() == 0):
+                    if (dht_last_update + sensor.getInterval() <= current_time()):
+                        dht_last_update = current_time()
+                        dht_thread = Thread(target = dht_process, args=(sensor.dht_sensor, ds, False))
+                        dht_thread.start()
+                elif(sensor.getType() == 1):
+                    if (thermal_last_update + sensor.getInterval() <= current_time()):
+                        thermal_last_update = current_time()
+                        thermal_thread = Thread(target = thermal_process, args=(sensor.thermal_sensor, ds, False))
+                        thermal_thread.start()
+                elif(sensor.getType() == 2):
+                    if(rpm_last_update + sensor.getInterval() <= current_time()):
+                        rpm_last_update = current_time()
+                        rpm_thread = Thread(target = rpm_process, args=(sensor.getPin(), ds, False))
+                        rpm_thread.start()
             
             if (not is_local_data):
                 is_local_data = True
