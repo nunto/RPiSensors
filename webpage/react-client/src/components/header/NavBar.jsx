@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, Segment } from 'semantic-ui-react';
+import { Menu, Segment, Modal, Header, Icon, Button } from 'semantic-ui-react';
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
-import Modal from 'react-modal';
 import Login from '../style/Login.css'
 
 class NavBar extends Component {
@@ -67,28 +66,38 @@ class NavBar extends Component {
                         </Menu>
                     </div>
                 <div>
-                    <CSSTransitionGroup transitionName="modalwindow" transitionEnterTimeout={600} transitionLeaveTimeout={600}>
-                        <Modal
-                            isOpen={this.state.modalActive}
-                            onAfterOpen={this.onOpenModal}
-                            onRequestClose={this.closeModal}
-                            style={styles}
-                            contentLabel="Test Modal"
-                        >
-                            <h2 ref={subtitle => this.subtitle = subtitle}>Login</h2>
+                    <Modal
+                        open={this.state.modalActive}
+                        onClose={this.closeModal}
+                        style={styles.content}
+                        basic
+                        closeIcon
+                        size='mini'
+                    >
+                        <Header as='h2'>
+                            <Icon name="sign in alternate" style={{color: '#28965A'}} />
+                            <Header.Content>Login</Header.Content>
+                        </Header>
+                        <Modal.Content>
                             <div class="container">
                                 <label for="uname"><b>Username: </b></label>
-                                <input type="text" placeholder="Enter Username" name="uname" required/>
+                                <input type="text" placeholder="Enter Username" name="uname" required />
                                 
                                 <br/>
 
                                 <label for="psw"><b>Password: </b></label>
-                                <input type="password" placeholder="Enter Password" name="psw" required/>
-                                    
-                                <button type="submit" class="submitBtn">Submit</button>
+                                <input type="password" placeholder="Enter Password" name="psw" required />
                             </div>
-                        </Modal>
-                    </CSSTransitionGroup>
+                        </Modal.Content>
+                        <Modal.Actions>
+                            <Button style={{backgroundColor: '#28965A'}} animated>
+                                <Button.Content visible><h4 class='label-text'>Submit</h4></Button.Content>
+                                <Button.Content hidden>
+                                    <Icon inverted name='arrow right' />
+                                </Button.Content>
+                            </Button>
+                        </Modal.Actions>
+                    </Modal>
                 </div>
             </div>
         )
@@ -103,7 +112,6 @@ const styles = {
         bottom                : 'auto',
         marginRight           : '-50%',
         transform             : 'translate(-50%, -50%)',
-        backgroundColor       : '#282c34'
     }
 }
 

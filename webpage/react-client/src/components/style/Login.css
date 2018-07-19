@@ -8,6 +8,14 @@ input[type=text], input[type=password] {
 
 }
 
+.label-text {
+    color: white;
+}
+
+.icon-themed {
+    color: #69A2B0;
+}
+
 .container {
     padding: 16px;
 }
