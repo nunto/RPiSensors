@@ -65,7 +65,7 @@ class NavBar extends Component {
                             </Menu.Menu>
                         </Menu>
                     </div>
-                <div>
+                <div class="parent">
                     <Modal
                         open={this.state.modalActive}
                         onClose={this.closeModal}
@@ -106,6 +106,7 @@ class NavBar extends Component {
 
 const styles = {
     content : {
+        position              : 'absolute',
         top                   : '50%',
         left                  : '50%',
         right                 : 'auto',

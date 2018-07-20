@@ -8,6 +8,19 @@ input[type=text], input[type=password] {
 
 }
 
+.parent {
+    position: relative;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+}
+
 .label-text {
     color: white;
 }
