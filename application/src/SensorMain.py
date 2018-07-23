@@ -8,7 +8,7 @@ from ConfigGui import ConfigGui
 from datetime import datetime
 from PyQt5.QtWidgets import QApplication
 import sys
-
+import os
 
 def current_time() -> int:
     return int(time.mktime(datetime.now().timetuple()))
@@ -21,9 +21,9 @@ def dht_process(sensor, ds, status: bool):
     hum = int(dht_data[1])
 
     if (status):
-        ds.SQL_insert(connect_string, tablename, "'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
+        ds.SQL_insert(connect_string, tablename, "'DHTSensor'", timestamp, temp, hum, 'NULL', 'NULL', 'NULL', 'NULL')
     else:
-        ds.offline_save("'DHTSensor'", timestamp, temp, hum, 0.0, 0.0, 0.0, 0.0)
+        ds.offline_save("'DHTSensor'", timestamp, temp, hum, 'NULL', 'NULL', 'NULL', 'NULL')
 
 
 def thermal_process(sensor, ds, status:bool):
@@ -32,9 +32,9 @@ def thermal_process(sensor, ds, status:bool):
     timestamp = current_time()
     
     if(status):
-       ds.SQL_insert(connect_string, tablename, "'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
+       ds.SQL_insert(connect_string, tablename, "'ThermalProbe'", timestamp, thermal_data, 'NULL', 'NULL', 'NULL', 'NULL', 'NULL')
     else:
-        ds.offline_save("'ThermalProbe'", timestamp, thermal_data, 0, 0.0, 0.0, 0.0, 0.0)
+        ds.offline_save("'ThermalProbe'", timestamp, thermal_data, 'NULL', 'NULL', 'NULL', 'NULL', 'NULL')
 
 def rpm_process(pin, ds, status:bool):
     print('in rpm process')
@@ -42,12 +42,16 @@ def rpm_process(pin, ds, status:bool):
     timestamp = current_time()
     #need to change these methods to accept all the different return values of sensor data
     if(status):
-        ds.SQL_insert(connect_string, tablename, "'RPM Sensor'", timestamp, 0.0, 0.0, rpm_data, 0.0, 0.0, 0.0)
+        ds.SQL_insert(connect_string, tablename, "'RPM Sensor'", timestamp, 'NULL', 'NULL', rpm_data, 'NULL', 'NULL', 'NULL')
     else:
-        ds.offline_save("'RPM Sensor'", timestamp, 0.0, 0.0, rpm_data, 0.0, 0.0, 0.0)
+        ds.offline_save("'RPM Sensor'", timestamp, 'NULL', 'NULL', rpm_data, 'NULL', 'NULL', 'NULL')
         
 if (__name__ == '__main__'):
-        
+    
+    os.system('sudo service ntp stop')
+    os.system('sudo ntpd -gq')
+    os.system('sudo service ntp start')
+    
     app2 = QApplication(sys.argv)
 
     screen = app2.primaryScreen()
@@ -89,6 +93,10 @@ if (__name__ == '__main__'):
 
     # TODO: Add a check for each sensor time, only insert if it is time for them
     while (True):
+        if(datetime.now().hour == 0 and datetime.now().minute == 0):
+            os.system('sudo service ntp stop')
+            os.system('sudo ntpd -gq')
+            os.system('sudo service ntp start')
         if (ch.is_connected()):
             if (is_local_data):
                 ds.data_sync(connect_string, tablename)
