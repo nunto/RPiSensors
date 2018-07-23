@@ -141,3 +141,5 @@ sudo leafpad config.txt
 In the text editor, add in the line:  
 `dtoverlay=w1-gpio,gpiopin=<PIN#>`  
 replacing <PIN#> with the number of the pin you are using.
+
+If an error saying "Cannot load w1 kernel modules" occurs, rebooting the Pi should resolve the issue.
