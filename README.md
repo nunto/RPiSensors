@@ -120,7 +120,25 @@ In your texteditor type:
 
 ```
 sudo ldconfig
+python3 -m pip install h5py
 python3 -m pip install tables
+```
+
+If there is a lbf77blas.so.3 error, running `sudo apt-get install libatlas-base-dev` should resolve the issue.
+
+### GUI
+
+PyQt5 must be installed for the gui to display.
+In a terminal:
+```
+sudo apt-get install python3-PyQt5
+```
+
+### NTP
+Ntp is used to sync the RPi clock.
+In a terminal:
+```
+sudo apt-get install ntp 
 ```
 
 ### DHT 11 - Temperature and Humidity
