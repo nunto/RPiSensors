@@ -17,9 +17,17 @@ class SensorOBJ():
             self.thermal_sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20)
         #add more sensor initializations when they come in 
         #if(sensor_type == 3):
+    
+    ## @brief Return the type of sensor of that particular instance of the Sensor object
+    #  @return Returns the sensor type as an integer where 0 is DHT, 1 is Thermal Probe, 3 is Current, 4 is Pressure, 5 is Flow
     def getType(self):
         return self.sensor_type
+    ## @brief Returns the interval set by the user for that specific instance of a sensor
+    #  @return Returns the interval at which readings are recorded in seconds
     def getInterval(self):
         return self.interval
+    
+    ## @brief Return the pin as set by the user from which that Sensor object is receiving data
+    #  @return Returns the pin as an integer based on the GPIO pin numbering
     def getPin(self):
         return self.pin

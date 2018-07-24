@@ -8,7 +8,7 @@ class ConnectionHandler:
     def __init__(self):
         pass
 
-    ## @brief Checks cocnnection to internet
+    ## @brief Checks connection to internet
     #  @return Returns a boolean, True if connected and False if disconnected        
     def is_connected(self):
         try:

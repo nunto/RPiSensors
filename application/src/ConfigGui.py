@@ -38,6 +38,7 @@ class ConfigGui (QWidget):
         self.userPassword.setEchoMode(QLineEdit.Password)
         self.tableName = QLineEdit(self)
         
+        #if there is a file named configuration.pickle and it is not empty, use the data in it to set the default values of the input fields
         if(os.path.exists('configuration.pickle') and os.path.getsize('configuration.pickle') > 0):
             with open('configuration.pickle', 'rb') as handle:
                 b = pickle.load(handle)
@@ -92,15 +93,17 @@ class ConfigGui (QWidget):
         self.pwd = self.userPassword.text()
         self.tablename = self.tableName.text()
         
+        #creating a connection string based on what the user inputted
         self.cnxn_string = 'DSN=%s;UID=%s;PWD=%s;DATABASE=%s;' % (self.dsn, self.uid, self.pwd, self.db)
         print(self.cnxn_string)
         self.config_settings  = [self.db, self.uid, self.tablename]
         
+        #dump the values that the user input into a pickle file
         with open('configuration.pickle', 'wb') as handle:
             pickle.dump(self.config_settings, handle, protocol=pickle.HIGHEST_PROTOCOL)
         handle.close()
                         
-        
+        #Try to connect, if unable to, tell the user to try again
         try:
             self.cnxn = pyodbc.connect(self.cnxn_string)
             self.close()

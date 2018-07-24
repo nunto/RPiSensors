@@ -87,12 +87,12 @@ class UpdateGui (QWidget):
         self.grid.addWidget(interval_column, 0, 3)
         self.grid.addWidget(pin_column, 0, 4)
         
-        self.grid.addWidget(self.new_sensor_box, 5, 2)
-        self.grid.addWidget(self.new_sensor_btn, 5, 3)
-        self.grid.addWidget(self.submit_btn, 5, 4)
+        self.grid.addWidget(self.new_sensor_box, len(self.SensorList) +1, 2)
+        self.grid.addWidget(self.new_sensor_btn, len(self.SensorList) +1, 3)
+        self.grid.addWidget(self.submit_btn, len(self.SensorList) +1, 4)
         
         self.grid.addWidget(self.pinlayout, 1, 1, -1, 1)
-        #self.pinlayout.setScaledContents(True)
+        
         
         self.setLayout(self.grid)
 
@@ -100,13 +100,15 @@ class UpdateGui (QWidget):
         self.center()
         self.setWindowTitle('UpdateGui')
         self.show()
-
+    
+    ## @brief centres the frame
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
     
+    ## @brief On the button click, loop through all the sensors, create new SensorOBJ objects that have their specific properties and append them to SensorObjectList, and set the is_ready variable to True to allow for the program to continue
     def submitButtonClick(self):
         print("Button clicked")
         for Sensor in self.SensorList:
@@ -136,17 +138,11 @@ class UpdateGui (QWidget):
         self.is_ready = True
         self.close()
     
-    def sensorButtonClick(self):
-        print(str(self.new_sensor_box.currentText()))
-        
+    ## @brief Creates a new sensor object on screen based on what is in the dropdown and appends it to SensorList
+    def sensorButtonClick(self):      
         if(self.new_sensor_box.currentText() == "DHT Sensor"):
-            print("stage 1")
             DHT = DHTSensorGUI()
-            print("stage 2")
             self.SensorList.append(DHT)
-            print(self.SensorList[-1].dht_label)
-            print(len(self.SensorList) - 1)
-            print("adding new dht sensor")
             self.grid.addWidget(self.SensorList[-1].dht_label, len(self.SensorList), 2)
             self.grid.addWidget(self.SensorList[-1].dhtintervalbox, len(self.SensorList), 3)
             self.grid.addWidget(self.SensorList[-1].dht_pin_box, len(self.SensorList), 4)
@@ -208,32 +204,7 @@ class UpdateGui (QWidget):
             self.grid.addWidget(self.new_sensor_btn, len(self.SensorList) +1, 3)
             self.grid.addWidget(self.submit_btn, len(self.SensorList) +1, 4)
             self.setLayout(self.grid)
-    
-    def getDHTInterval(self):
-        return float(self.dht_interval)
-    def getProbeInterval(self):
-        return float(self.probe_interval)
-    def getCurrentInterval(self):
-        return float(self.current_interval)
-    def getRpmInterval(self):
-        return float(self.rpm_interval)
-    def getPressureInterval(self):
-        return float(self.pressure_interval)
-    def getFlowInterval(self):
-        return float(self.flow_interval)
-    
-    def getDHTPin(self):
-        return int(self.dht_pin_number)
-    def getProbePin(self):
-        return int(self.probe_pin_number)
-    def getCurrentPin(self):
-        return int(self.current_pin_number)
-    def getRpmPin(self):
-        return int(self.rpm_pin_number)
-    def getPressurePin(self):
-        return int(self.pressure_pin_number)
-    def getFlowPin(self):
-        return int(self.flow_pin_number)
+
 
 class DHTSensorGUI():
     def __init__(self):
@@ -258,15 +229,21 @@ class DHTSensorGUI():
         self.dht_pin_box.setProperty('Test', True)
         self.dht_pin_box.activated[str].connect(self.onDHTPinChange)
     
+    ## @brief Changes interval to what is specified in the dropdown
     def onDHTIntervalChange(self, text):
         self.dht_interval = int(text)
     
+    ## @brief Changes pin to what is specified in the dropdown
     def onDHTPinChange(self, text):
         self.dht_pin_number = int(text)
     
+    ## @brief Gets the interval of this object
+    #  @return Returns the interval as an int in seconds
     def getInterval(self):
         return self.dht_interval
     
+    ## @brief Gets the pin for this object
+    #  @return Returns the pin that this object will be hooked up as an int
     def getPin(self):
         return self.dht_pin_number
 
@@ -293,15 +270,21 @@ class ThermalSensorGUI():
         self.probe_pin_box.setProperty('Test', True)
         self.probe_pin_box.activated[str].connect(self.onProbePinChange)
     
+    ## @brief Changes interval to what is specified in the dropdown
     def onProbeIntervalChange(self, text):
         self.probe_interval = int(text)
     
+    ## @brief Changes pin to what is specified in the dropdown
     def onProbePinChange(self, text):
         self.probe_pin_number = int(text)
     
+    ## @brief Gets the interval of this object
+    #  @return Returns the interval as an int in seconds
     def getInterval(self):
         return self.probe_interval
-
+    
+    ## @brief Gets the pin for this object
+    #  @return Returns the pin that this object will be hooked up as an int
     def getPin(self):
         return self.probe_pin_number
     
@@ -328,15 +311,21 @@ class RPMSensorGUI():
         self.rpm_pin_box.setProperty('Test', True)
         self.rpm_pin_box.activated[str].connect(self.onRPMPinChange)
     
+    ## @brief Changes interval to what is specified in the dropdown
     def onRPMIntervalChange(self, text):
         self.rpm_interval = int(text)
     
+    ## @brief Changes pin to what is specified in the dropdown
     def onRPMPinChange(self, text):
         self.rpm_pin_number = int(text)
     
+    ## @brief Gets the interval of this object
+    #  @return Returns the interval as an int in seconds
     def getInterval(self):
         return self.rpm_interval
 
+    ## @brief Gets the pin for this object
+    #  @return Returns the pin that this object will be hooked up as an int
     def getPin(self):
         return self.rpm_pin_number
     
@@ -363,15 +352,21 @@ class CurrentSensorGUI():
         self.current_pin_box.setProperty('Test', True)
         self.current_pin_box.activated[str].connect(self.onCurrentPinChange)
     
+    ## @brief Changes interval to what is specified in the dropdown
     def onCurrentIntervalChange(self, text):
         self.current_interval = int(text)
     
+    ## @brief Changes pin to what is specified in the dropdown
     def onCurrentPinChange(self, text):
         self.current_pin_number = int(text)
     
+    ## @brief Gets the interval of this object
+    #  @return Returns the interval as an int in seconds
     def getInterval(self):
         return self.current_interval
 
+    ## @brief Gets the pin for this object
+    #  @return Returns the pin that this object will be hooked up as an int
     def getPin(self):
         return self.current_pin_number
 
@@ -398,15 +393,21 @@ class PressureSensorGUI():
         self.pressure_pin_box.setProperty('Test', True)
         self.pressure_pin_box.activated[str].connect(self.onPressurePinChange)
     
+    ## @brief Changes interval to what is specified in the dropdown
     def onPressureIntervalChange(self, text):
         self.pressure_interval = int(text)
     
+    ## @brief Changes pin to what is specified in the dropdown
     def onPressurePinChange(self, text):
         self.pressure_pin_number = int(text)
     
+    ## @brief Gets the interval of this object
+    #  @return Returns the interval as an int in seconds
     def getInterval(self):
         return self.pressure_interval
 
+    ## @brief Gets the pin for this object
+    #  @return Returns the pin that this object will be hooked up as an int
     def getPin(self):
         return self.pressure_pin_number
 
@@ -433,15 +434,21 @@ class FlowSensorGUI():
         self.flow_pin_box.setProperty('Test', True)
         self.flow_pin_box.activated[str].connect(self.onFlowPinChange)
     
+    ## @brief Changes interval to what is specified in the dropdown
     def onFlowIntervalChange(self, text):
         self.flow_interval = int(text)
     
+    ## @brief Changes pin to what is specified in the dropdown
     def onFlowPinChange(self, text):
         self.flow_pin_number = int(text)
-        
+    
+    ## @brief Gets the interval of this object
+    #  @return Returns the interval as an int in seconds
     def getInterval(self):
         return self.flow_interval
 
+    ## @brief Gets the pin for this object
+    #  @return Returns the pin that this object will be hooked up as an int
     def getPin(self):
         return self.flow_pin_number
 
