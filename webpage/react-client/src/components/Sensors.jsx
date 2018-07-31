@@ -27,8 +27,25 @@ class Sensors extends Component {
             visible: false,
             menuTitle: "Summary",
         }
+        this.handleGraphUpdate = this.handleGraphUpdate.bind(this)
+    }
+
+    handleGraphUpdate = () => {
+        this.dataUpdate()
+        .then(() => this.forceUpdate())
     }
     
+    async dataUpdate() {
+        await fetch('http://172.18.19.130:8081/retrieve_data.php')
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson)
+            var rows = JSON.parse(responseJson)
+            this.setState({ data: rows })
+
+        })
+    }
+
     handleButtonClick = () => this.setState({ visible: !this.state.visible })
 
     handleSidebarHide = () => this.setState({ visible: false })
@@ -38,6 +55,7 @@ class Sensors extends Component {
             menuTitle: name,
             visible: false
          })
+         this.handleButtonClick()
     }
 
     async componentDidMount() {
@@ -57,7 +75,8 @@ class Sensors extends Component {
         return (
             <div>
                 <div>
-                    <Button onClick={this.handleButtonClick} style={{margin: '12px', backgroundColor: '#28965A', color: 'white'}}>Select by...</Button>
+                    <Button onClick={this.handleButtonClick} style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}}>Select by...</Button>
+                    <Button onClick={this.handleGraphUpdate} style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block', float:'right'}}>Refresh</Button>
                     <Sidebar.Pushable as={Segment}>
                         <Sidebar
                             as={Menu}

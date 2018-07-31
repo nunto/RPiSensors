@@ -28,7 +28,6 @@ class NavBar extends Component {
     _handleItemClick = (e, { name }) => {
         console.log("Active: " + name)
         this.setState({ activeItem: name }) 
-        console.log(this.state.activeItem)
     }
 
     render() {
