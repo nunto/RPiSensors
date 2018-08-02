@@ -160,4 +160,12 @@ In the text editor, add in the line:
 `dtoverlay=w1-gpio,gpiopin=<PIN#>`  
 replacing <PIN#> with the number of the pin you are using.
 
+### Analog to Digital Convertor Chip - MCP3008
+In a terminal window:
+```
+sudo apt-get update
+sudo apt-get install build-essential python-dev python-smbus python-pip
+sudo pip install adafruit-mcp3008
+```
+
 If an error saying "Cannot load w1 kernel modules" occurs, rebooting the Pi should resolve the issue.
