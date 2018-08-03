@@ -105,7 +105,6 @@ class Devices extends Component {
                 this.setState({ columns: 2 })
             }
         }
-        console.log("width: " + window.innerWidth + "\nheight: " + window.innerHeight)
     }
 
     // Opens the edit device modal
