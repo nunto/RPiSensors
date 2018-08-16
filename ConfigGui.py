@@ -97,7 +97,7 @@ class ConfigGui (QWidget):
         #creating a connection string based on what the user inputted
         self.cnxn_string = 'DSN=%s;UID=%s;PWD=%s;DATABASE=%s;' % (self.dsn, self.uid, self.pwd, self.db)
         print(self.cnxn_string)
-        self.config_settings  = [self.db, self.uid, self.tablename]
+        self.config_settings  = [self.db, self.uid, self.pwd, self.tablename]
         
         #dump the values that the user input into a pickle file
         with open('configuration.pickle', 'wb') as handle:

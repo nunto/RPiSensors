@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMainWindow, 
 from PyQt5.QtGui import QPixmap
 from SensorOBJ import SensorOBJ
 import RPi.GPIO as GPIO
-
+import pickle
 
 class UpdateGui (QWidget):
     def __init__(self, width, height):
@@ -11,7 +11,6 @@ class UpdateGui (QWidget):
         self.width = width
         self.height = height
         
-
         self.is_ready = False
         
         
@@ -135,7 +134,10 @@ class UpdateGui (QWidget):
             elif(hasattr(Sensor, 'flow_label')):
                 flow = SensorOBJ(5, Sensor.getInterval(), Sensor.getPin())
                 self.SensorObjectList.append(flow)
-                
+        
+        with open('sensorconfiguration.pickle', 'wb') as handle:
+            pickle.dump(self.SensorObjectList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()    
         self.is_ready = True
         self.close()
     

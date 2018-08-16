@@ -9,6 +9,7 @@ from datetime import datetime
 from PyQt5.QtWidgets import QApplication
 import sys
 import os
+import pickle
 
 ## @brief Returns the current time as an int for easy comparison of seconds passed
 #  @return returns time as an int in sceonds from January 1 1970
@@ -73,54 +74,62 @@ def current_process(channel, ds, status:bool):
         ds.offline_save("'Current Sensor'", timestamp, 'NULL', 'NULL', 'NULL', current_data, 'NULL', 'NULL')
 
 if (__name__ == '__main__'):
-    print('hi')
     #ntp time sync
     """
     os.system('sudo service ntp stop')
-    print('h')
     os.system('sudo ntpd -gq')
     print('b')
     os.system('sudo service ntp start')
-    print('k')
     """
-    app2 = QApplication(sys.argv)
-    print('starting first gui')
-    screen = app2.primaryScreen()
-    screenSize = screen.size()
+    if(os.path.exists('configuration.pickle') and os.path.getsize('configuration.pickle') > 0):
+            with open('configuration.pickle', 'rb') as handle:
+                k = pickle.load(handle)
+                connect_string = 'DSN=sqlserverdatasource;UID=%s;PWD=%s;DATABASE=%s;' % (k[1], k[2], k[0])
+                tablename = k[3]
+            handle.close()
+    else:
+        app2 = QApplication(sys.argv)
+        screen = app2.primaryScreen()
+        screenSize = screen.size()
+        
+        #setting up the initial gui
+        config_gui = ConfigGui(screenSize.width()/2, screenSize.height()/2)
+        
+        app2.exec_()
+        #get the connection string and table the user inputted in config_gui
+        connect_string = config_gui.cnxn_string
+        tablename = config_gui.tablename 
     
-    #setting up the initial gui
-    config_gui = ConfigGui(screenSize.width()/2, screenSize.height()/2)
+        if(not config_gui.is_ready):
+            sys.exit()
     
-    app2.exec_()
+    if(os.path.exists('sensorconfiguration.pickle') and os.path.getsize('sensorconfiguration.pickle') > 0):
+        with open('sensorconfiguration.pickle', 'rb') as handle:
+            b = pickle.load(handle)
+        handle.close()
+        
+        sensor_list = b
+    else:
+        
+        app = QApplication(sys.argv)
+        print('starting second gui')
+        screen = app.primaryScreen()
+        screenSize = screen.size()
+        
+        #creating the gui for all the settings
+        update_gui = UpdateGui(screenSize.width()/2, screenSize.height()/2)
+        
+        app.exec_()
+        
+        
+        #if submit has not been pressed
+        if(not update_gui.is_ready):
+            sys.exit()
+        
+        #creating list of all sensors that were created in update_gui
+        sensor_list = update_gui.SensorObjectList
     
-    if(not config_gui.is_ready):
-        sys.exit()
-    
-    app = QApplication(sys.argv)
-    print('starting second gui')
-    screen = app.primaryScreen()
-    screenSize = screen.size()
-    
-    #creating the gui for all the settings
-    update_gui = UpdateGui(screenSize.width()/2, screenSize.height()/2)
-    
-    app.exec_()
-    print('finished with guis')
-    
-    
-    #if submit has not been pressed
-    if(not update_gui.is_ready):
-        sys.exit()
-    
-    #creating list of all sensors that were created in update_gui
-    sensor_list = update_gui.SensorObjectList
-    
-    
-    #get the connection string and table the user inputted in config_gui
-    connect_string = config_gui.cnxn_string
-    tablename = config_gui.tablename 
-    
-    
+
     is_local_data = False
     dht_last_update = 0
     thermal_last_update = 0
