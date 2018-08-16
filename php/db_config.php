@@ -1,6 +1,6 @@
 <?php
 
-$HOST = "MICHAEL"; // Server
+$HOST = "mpanunto-pc"; // Server
 
 $DATABASE_NAME = "SensorReadings"; // DB
 
