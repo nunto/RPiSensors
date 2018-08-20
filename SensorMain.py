@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication
 import sys
 import os
 import pickle
+import RPi.GPIO as GPIO
 
 ## @brief Returns the current time as an int for easy comparison of seconds passed
 #  @return returns time as an int in sceonds from January 1 1970
@@ -22,6 +23,9 @@ def current_time() -> int:
 #  @param status Whether or not the pi is connected to the internet. True is connected, False is not connected
 def dht_process(sensor, ds, status: bool):
     print('in dht_process')
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.cleanup
     dht_data = SensorDataRetrieval.dht_reading(sensor)
     timestamp = datetime.now()
     temp = float(dht_data[0])
@@ -129,7 +133,7 @@ if (__name__ == '__main__'):
         #creating list of all sensors that were created in update_gui
         sensor_list = update_gui.SensorObjectList
     
-
+    
     is_local_data = False
     dht_last_update = 0
     thermal_last_update = 0

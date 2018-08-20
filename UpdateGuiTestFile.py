@@ -114,9 +114,6 @@ class UpdateGui (QWidget):
         for Sensor in self.SensorList:
             print(Sensor.getInterval())
             if(hasattr(Sensor, 'dht_label')):
-                GPIO.setwarnings(False)
-                GPIO.setmode(GPIO.BCM)
-                GPIO.cleanup
                 dht = SensorOBJ(0, Sensor.getInterval(), Sensor.getPin())
                 self.SensorObjectList.append(dht)
             elif(hasattr(Sensor, 'probe_label')):
