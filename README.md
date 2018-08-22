@@ -8,6 +8,7 @@ Project Description here
 
 By default database configurations are saved, and reused. To change the configurations simply delete configuration.pickle for database configurations, and sensorconfiguration.pickle for the sensor configuration.
 Table columns must be saved in DataStorage.py to properly send. 
+By default the data can only be sent by a table with the columns SensorType, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow.
 
 
 ## Setting up the Raspberry Pi for SQL
