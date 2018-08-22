@@ -5,6 +5,7 @@ Project Description here
 ## Usage  
 --------
 *Here is where usage info will go once the application is finished*
+
 By default database configurations are saved, and reused. To change the configurations simply delete configuration.pickle for database configurations, and sensorconfiguration.pickle for the sensor configuration.
 Table columns must be saved in DataStorage.py to properly send. 
 
@@ -179,5 +180,7 @@ In the text editor, add in the lines :
 cd /home/pi/SensorProject
 sudo python3 SensorMain.py
 ```
+
+If for any reason booting on launch is no longer needed, it can be turned off by adding a # before sudo python3 SensorMain.py in the previous step.
 
 If an error saying "Cannot load w1 kernel modules" occurs, rebooting the Pi should resolve the issue.
