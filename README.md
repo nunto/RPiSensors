@@ -179,7 +179,7 @@ sudo leafpad /etc/profile
 In the text editor, add in the lines :
 ```
 cd /home/pi/SensorProject
-sudo python3 SensorMain.py
+sudo python3 SensorMain.py &
 ```
 
 If for any reason booting on launch is no longer needed, it can be turned off by adding a # before sudo python3 SensorMain.py in the previous step.
