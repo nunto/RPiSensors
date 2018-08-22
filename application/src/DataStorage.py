@@ -1,6 +1,5 @@
 import pyodbc
 import datetime
-import pickle
 import os
 import h5py
 import numpy as np
@@ -36,12 +35,12 @@ class DataStorage:
     #  @param amperage Current reading in amps
     #  @param pressure Pressure reading in PSI
     #  @param flow Flow reading in cm3 
-    def SQL_insert(self, connection_string:str, tablename:str, sensortype: str, timestamp: int, temp: float, humidity: int, rpm: float, amperage: float, pressure: float, flow: float):
+    def SQL_insert(self, connection_string:str, tablename:str, sensortype: str, timestamp, temp: float, humidity: int, rpm: float, amperage: float, pressure: float, flow: float):
         cnxn = pyodbc.connect(connection_string)
         #print("Temp: " + str(temp) + "\nHumidity: " + str(humidity) + "\nrpm: " + str(rpm) + "\namperage: " + str(amperage) + "\npressure: " + str(pressure) + "\nflow: " + str(flow))
         cursor = cnxn.cursor()
-        query = 'INSERT INTO ' + tablename + '(SensorID, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow) values ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})'.format(sensortype, timestamp, temp, humidity, rpm, amperage, pressure, flow)
-        cursor.execute(query)
+        query = 'INSERT INTO ' + tablename + '(SensorID, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow) values ({0}, ?, {1} , {2}, {3}, {4}, {5}, {6})'.format(sensortype, temp, humidity, rpm, amperage, pressure, flow)
+        cursor.execute(query, (timestamp))
         cnxn.commit()
 
     ## @brief Stores data into a locally saved file

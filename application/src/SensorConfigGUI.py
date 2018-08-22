@@ -1,8 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMainWindow, QMessageBox, QComboBox, QLabel, QGridLayout, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMainWindow, QMessageBox, QComboBox, QLabel, QGridLayout, QPushButton, QLineEdit
 from PyQt5.QtGui import QPixmap
 from SensorOBJ import SensorOBJ
-import RPi.GPIO as GPIO
+import pickle
 
 class UpdateGui (QWidget):
     def __init__(self, width, height):
@@ -10,7 +10,6 @@ class UpdateGui (QWidget):
         self.width = width
         self.height = height
         
-
         self.is_ready = False
         
         
@@ -49,11 +48,15 @@ class UpdateGui (QWidget):
         
         sensor_column = QLabel('Sensors')
         interval_column = QLabel('Interval of Measurement')
-        pin_column = QLabel('Pin Number')
+        pin_column = QLabel('Pin/Channel Number')
+        operation_column = QLabel('Operation')
+        factor_column = QLabel('Factor')
         
         sensor_column.setProperty('Test', True)
         interval_column.setProperty('Test', True)
         pin_column.setProperty('Test', True)
+        operation_column.setProperty('Test', True)
+        factor_column.setProperty('Test', True)
         
 
         self.pinlayout = QLabel(self)
@@ -65,7 +68,6 @@ class UpdateGui (QWidget):
         self.new_sensor_box.addItem("Temperature Probe Sensor")
         self.new_sensor_box.addItem("RPM Sensor")
         self.new_sensor_box.addItem("Current Sensor")
-        self.new_sensor_box.addItem("Pressure Sensor")
         self.new_sensor_box.addItem("Flow Sensor")
         self.new_sensor_box.setProperty('Test', True)
         
@@ -86,6 +88,8 @@ class UpdateGui (QWidget):
         self.grid.addWidget(sensor_column, 0, 2)
         self.grid.addWidget(interval_column, 0, 3)
         self.grid.addWidget(pin_column, 0, 4)
+        self.grid.addWidget(operation_column, 0, 5)
+        self.grid.addWidget(factor_column, 0, 6)
         
         self.grid.addWidget(self.new_sensor_box, len(self.SensorList) +1, 2)
         self.grid.addWidget(self.new_sensor_btn, len(self.SensorList) +1, 3)
@@ -98,7 +102,7 @@ class UpdateGui (QWidget):
 
         self.resize(self.width, self.height)
         self.center()
-        self.setWindowTitle('UpdateGui')
+        self.setWindowTitle('Sensor Configuration')
         self.show()
     
     ## @brief centres the frame
@@ -114,27 +118,24 @@ class UpdateGui (QWidget):
         for Sensor in self.SensorList:
             print(Sensor.getInterval())
             if(hasattr(Sensor, 'dht_label')):
-                GPIO.setwarnings(False)
-                GPIO.setmode(GPIO.BCM)
-                GPIO.cleanup
-                dht = SensorOBJ(0, Sensor.getInterval(), Sensor.getPin())
+                dht = SensorOBJ(0, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(dht)
             elif(hasattr(Sensor, 'probe_label')):
-                thermal = SensorOBJ(1, Sensor.getInterval(), Sensor.getPin())
+                thermal = SensorOBJ(1, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(thermal)
             elif(hasattr(Sensor, 'rpm_label')):
-                rpm = SensorOBJ(2, Sensor.getInterval(), Sensor.getPin())
+                rpm = SensorOBJ(2, Sensor.getInterval(), Sensor.getPin(), Sensor.operationDefinition(), float(Sensor.rpm_factor_entry.text()))
                 self.SensorObjectList.append(rpm)
             elif(hasattr(Sensor, 'current_label')):
-                current = SensorOBJ(3, Sensor.getInterval(), Sensor.getPin())
+                current = SensorOBJ(3, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(current)
-            elif(hasattr(Sensor, 'pressure_label')):
-                pressure = SensorOBJ(4, Sensor.getInterval(), Sensor.getPin())
-                self.SensorObjectList.append(pressure)
             elif(hasattr(Sensor, 'flow_label')):
-                flow = SensorOBJ(5, Sensor.getInterval(), Sensor.getPin())
+                flow = SensorOBJ(4, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(flow)
-                
+        
+        with open('sensorconfiguration.pickle', 'wb') as handle:
+            pickle.dump(self.SensorObjectList, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()    
         self.is_ready = True
         self.close()
     
@@ -168,6 +169,8 @@ class UpdateGui (QWidget):
             self.grid.addWidget(self.SensorList[-1].rpm_label, len(self.SensorList), 2)
             self.grid.addWidget(self.SensorList[-1].rpmintervalbox, len(self.SensorList), 3)
             self.grid.addWidget(self.SensorList[-1].rpm_pin_box, len(self.SensorList), 4)
+            self.grid.addWidget(self.SensorList[-1].rpm_operations, len(self.SensorList), 5)
+            self.grid.addWidget(self.SensorList[-1].rpm_factor_entry, len(self.SensorList), 6)
             self.grid.addWidget(self.new_sensor_box, len(self.SensorList) +1, 2)
             self.grid.addWidget(self.new_sensor_btn, len(self.SensorList) +1, 3)
             self.grid.addWidget(self.submit_btn, len(self.SensorList) +1, 4)
@@ -178,17 +181,6 @@ class UpdateGui (QWidget):
             self.grid.addWidget(self.SensorList[-1].current_label, len(self.SensorList), 2)
             self.grid.addWidget(self.SensorList[-1].currentintervalbox, len(self.SensorList), 3)
             self.grid.addWidget(self.SensorList[-1].current_pin_box, len(self.SensorList), 4)
-            self.grid.addWidget(self.new_sensor_box, len(self.SensorList) +1, 2)
-            self.grid.addWidget(self.new_sensor_btn, len(self.SensorList) +1, 3)
-            self.grid.addWidget(self.submit_btn, len(self.SensorList) +1, 4)
-            self.setLayout(self.grid)
-        
-        elif(self.new_sensor_box.currentText() == "Pressure Sensor"):
-            Pressure = PressureSensorGUI()
-            self.SensorList.append(Pressure)
-            self.grid.addWidget(self.SensorList[-1].pressure_label, len(self.SensorList), 2)
-            self.grid.addWidget(self.SensorList[-1].pressureintervalbox, len(self.SensorList), 3)
-            self.grid.addWidget(self.SensorList[-1].pressure_pin_box, len(self.SensorList), 4)
             self.grid.addWidget(self.new_sensor_box, len(self.SensorList) +1, 2)
             self.grid.addWidget(self.new_sensor_btn, len(self.SensorList) +1, 3)
             self.grid.addWidget(self.submit_btn, len(self.SensorList) +1, 4)
@@ -223,9 +215,26 @@ class DHTSensorGUI():
         self.dht_pin_box = QComboBox()
         self.dht_pin_box.addItem("2")
         self.dht_pin_box.addItem("3")
+        self.dht_pin_box.addItem("4")
+        self.dht_pin_box.addItem("5")
+        self.dht_pin_box.addItem("6")
+        self.dht_pin_box.addItem("7")
+        self.dht_pin_box.addItem("8")
+        self.dht_pin_box.addItem("9")
+        self.dht_pin_box.addItem("10")
+        self.dht_pin_box.addItem("11")
+        self.dht_pin_box.addItem("12")
+        self.dht_pin_box.addItem("13")
         self.dht_pin_box.addItem("14")
         self.dht_pin_box.addItem("15")
-        self.dht_pin_box.addItem("18")
+        self.dht_pin_box.addItem("16")
+        self.dht_pin_box.addItem("17")
+        self.dht_pin_box.addItem("19")
+        self.dht_pin_box.addItem("20")
+        self.dht_pin_box.addItem("21")
+        self.dht_pin_box.addItem("22")
+        self.dht_pin_box.addItem("26")
+        self.dht_pin_box.addItem("27")
         self.dht_pin_box.setProperty('Test', True)
         self.dht_pin_box.activated[str].connect(self.onDHTPinChange)
     
@@ -264,9 +273,26 @@ class ThermalSensorGUI():
         self.probe_pin_box = QComboBox()
         self.probe_pin_box.addItem("2")
         self.probe_pin_box.addItem("3")
+        self.probe_pin_box.addItem("4")
+        self.probe_pin_box.addItem("5")
+        self.probe_pin_box.addItem("6")
+        self.probe_pin_box.addItem("7")
+        self.probe_pin_box.addItem("8")
+        self.probe_pin_box.addItem("9")
+        self.probe_pin_box.addItem("10")
+        self.probe_pin_box.addItem("11")
+        self.probe_pin_box.addItem("12")
+        self.probe_pin_box.addItem("13")
         self.probe_pin_box.addItem("14")
         self.probe_pin_box.addItem("15")
-        self.probe_pin_box.addItem("18")
+        self.probe_pin_box.addItem("16")
+        self.probe_pin_box.addItem("17")
+        self.probe_pin_box.addItem("19")
+        self.probe_pin_box.addItem("20")
+        self.probe_pin_box.addItem("21")
+        self.probe_pin_box.addItem("22")
+        self.probe_pin_box.addItem("26")
+        self.probe_pin_box.addItem("27")
         self.probe_pin_box.setProperty('Test', True)
         self.probe_pin_box.activated[str].connect(self.onProbePinChange)
     
@@ -305,11 +331,36 @@ class RPMSensorGUI():
         self.rpm_pin_box = QComboBox()
         self.rpm_pin_box.addItem("2")
         self.rpm_pin_box.addItem("3")
+        self.rpm_pin_box.addItem("4")
+        self.rpm_pin_box.addItem("5")
+        self.rpm_pin_box.addItem("6")
+        self.rpm_pin_box.addItem("7")
+        self.rpm_pin_box.addItem("8")
+        self.rpm_pin_box.addItem("9")
+        self.rpm_pin_box.addItem("10")
+        self.rpm_pin_box.addItem("11")
+        self.rpm_pin_box.addItem("12")
+        self.rpm_pin_box.addItem("13")
         self.rpm_pin_box.addItem("14")
         self.rpm_pin_box.addItem("15")
-        self.rpm_pin_box.addItem("18")
+        self.rpm_pin_box.addItem("16")
+        self.rpm_pin_box.addItem("17")
+        self.rpm_pin_box.addItem("19")
+        self.rpm_pin_box.addItem("20")
+        self.rpm_pin_box.addItem("21")
+        self.rpm_pin_box.addItem("22")
+        self.rpm_pin_box.addItem("26")
+        self.rpm_pin_box.addItem("27")
         self.rpm_pin_box.setProperty('Test', True)
         self.rpm_pin_box.activated[str].connect(self.onRPMPinChange)
+        
+        self.rpm_operations = QComboBox()
+        self.rpm_operations.addItem('Multiply')
+        self.rpm_operations.addItem('Divide')
+        self.rpm_operations.setProperty('Test', True)
+        
+        self.rpm_factor_entry = QLineEdit()
+        
     
     ## @brief Changes interval to what is specified in the dropdown
     def onRPMIntervalChange(self, text):
@@ -318,6 +369,13 @@ class RPMSensorGUI():
     ## @brief Changes pin to what is specified in the dropdown
     def onRPMPinChange(self, text):
         self.rpm_pin_number = int(text)
+    ## @brief Defines the operation to be used for a correction factor as multipy or divide
+    #  @return Returns an int to represent multiplication or division. 0 is multiply, 1 is divide
+    def operationDefinition(self):
+        if(self.rpm_operations.currentText() == 'Multiply'):
+            return 0
+        if(self.rpm_operations.currentText() == 'Divide'):
+            return 1
     
     ## @brief Gets the interval of this object
     #  @return Returns the interval as an int in seconds
@@ -333,7 +391,7 @@ class CurrentSensorGUI():
     def __init__(self):
         self.current_label = QLabel('Current Sensor: ')
         self.current_interval = 1
-        self.current_pin_number = 2
+        self.current_pin_number = 0
         
         self.currentintervalbox = QComboBox()
         self.currentintervalbox.addItem("1")
@@ -344,11 +402,14 @@ class CurrentSensorGUI():
         self.currentintervalbox.activated[str].connect(self.onCurrentIntervalChange)
         
         self.current_pin_box = QComboBox()
+        self.current_pin_box.addItem("0")
+        self.current_pin_box.addItem("1")
         self.current_pin_box.addItem("2")
         self.current_pin_box.addItem("3")
-        self.current_pin_box.addItem("14")
-        self.current_pin_box.addItem("15")
-        self.current_pin_box.addItem("18")
+        self.current_pin_box.addItem("4")
+        self.current_pin_box.addItem("5")
+        self.current_pin_box.addItem("6")
+        self.current_pin_box.addItem("7")
         self.current_pin_box.setProperty('Test', True)
         self.current_pin_box.activated[str].connect(self.onCurrentPinChange)
     
@@ -370,47 +431,6 @@ class CurrentSensorGUI():
     def getPin(self):
         return self.current_pin_number
 
-class PressureSensorGUI():
-    def __init__(self):
-        self.pressure_label = QLabel('Pressure Sensor: ')
-        self.pressure_interval = 1
-        self.pressure_pin_number = 2
-        
-        self.pressureintervalbox = QComboBox()
-        self.pressureintervalbox.addItem("1")
-        self.pressureintervalbox.addItem("2")
-        self.pressureintervalbox.addItem("3")
-        self.pressureintervalbox.addItem("4")
-        self.pressureintervalbox.setProperty('Test', True)
-        self.pressureintervalbox.activated[str].connect(self.onPressureIntervalChange)
-        
-        self.pressure_pin_box = QComboBox()
-        self.pressure_pin_box.addItem("2")
-        self.pressure_pin_box.addItem("3")
-        self.pressure_pin_box.addItem("14")
-        self.pressure_pin_box.addItem("15")
-        self.pressure_pin_box.addItem("18")
-        self.pressure_pin_box.setProperty('Test', True)
-        self.pressure_pin_box.activated[str].connect(self.onPressurePinChange)
-    
-    ## @brief Changes interval to what is specified in the dropdown
-    def onPressureIntervalChange(self, text):
-        self.pressure_interval = int(text)
-    
-    ## @brief Changes pin to what is specified in the dropdown
-    def onPressurePinChange(self, text):
-        self.pressure_pin_number = int(text)
-    
-    ## @brief Gets the interval of this object
-    #  @return Returns the interval as an int in seconds
-    def getInterval(self):
-        return self.pressure_interval
-
-    ## @brief Gets the pin for this object
-    #  @return Returns the pin that this object will be hooked up as an int
-    def getPin(self):
-        return self.pressure_pin_number
-
 class FlowSensorGUI():
     def __init__(self):
         self.flow_label = QLabel('Flow Sensor: ')
@@ -426,11 +446,14 @@ class FlowSensorGUI():
         self.flowintervalbox.activated[str].connect(self.onFlowIntervalChange)
         
         self.flow_pin_box = QComboBox()
+        self.flow_pin_box.addItem("0")
+        self.flow_pin_box.addItem("1")
         self.flow_pin_box.addItem("2")
         self.flow_pin_box.addItem("3")
-        self.flow_pin_box.addItem("14")
-        self.flow_pin_box.addItem("15")
-        self.flow_pin_box.addItem("18")
+        self.flow_pin_box.addItem("4")
+        self.flow_pin_box.addItem("5")
+        self.flow_pin_box.addItem("6")
+        self.flow_pin_box.addItem("7")
         self.flow_pin_box.setProperty('Test', True)
         self.flow_pin_box.activated[str].connect(self.onFlowPinChange)
     

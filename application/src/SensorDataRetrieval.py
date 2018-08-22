@@ -2,17 +2,11 @@ import RPi.GPIO as GPIO
 import DHT11
 from w1thermsensor import W1ThermSensor
 import datetime as dt
+import Adafruit_MCP3008
 
 # @brief Reads data from the different sensors
 class SensorDataRetrieval:
-    def __init__(self, dht_pin: int, thermal_pin:int, rpm_pin:int, current_pin:int, pressure_pin:int, flow_pin:int):
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)
-        GPIO.cleanup
-        self.rpm_pin = rpm_pin
-        self.dht_sensor = DHT11.DHT11(pin=dht_pin)
-        self.thermal_sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20)
-        #need to add the overwriting of temperature probe in file
+    #need to add the overwriting of temperature probe in file
     
     ## @brief Gets the data from a dht sensor
     #  @param dht_sensor A specific instance of a DHT Sensor from which data will be acquired
@@ -41,7 +35,7 @@ class SensorDataRetrieval:
     #  @param rpm_pin The pin from which the IR sensor is sending data
     #  @return Revolutions per minute based on how often the beam breaks
     @classmethod
-    def infrared_rpm_reading(cls, rpm_pin) -> float:
+    def infrared_rpm_reading(cls, rpm_pin, operation, factor) -> float:
         GPIO.setup(rpm_pin , GPIO.IN, pull_up_down=GPIO.PUD_UP)
         #if the sensor is sending a signal(not broken)
         if(GPIO.input(rpm_pin)):
@@ -68,7 +62,42 @@ class SensorDataRetrieval:
         # be sure to ask about a difference in machines with holes and input field?
         milliseconds = (difference.days * 24 * 60 * 60 + difference.seconds) * 1000 + difference.microseconds / 1000.0
         rpm = (1000/milliseconds)*60
-        print(rpm)
-        return rpm
+        if(operation == 0):
+            new_rpm = rpm*factor
+        elif(operation == 1):
+            new_rpm = rpm/factor
+        return new_rpm
+    
+    ## @brief calculates the current based on a current sesnor going through an ADC chip
+    #  @param current_channel The channel on the ADC chip to which the sensor is sending data. Between 0-7
+    #  @param calibration_factor The factor of calibration to convert the measurement into real amps
+    #  @return Current measured in amps between +- 0.9 Amps
+    @classmethod
+    def current_reading(cls, current_channel) -> float:
+        CLK = 18
+        MISO = 23
+        MOSI = 24
+        CS   = 25
+        mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+        number_of_samples = 1480
+        supply_voltage = 3300
+        calibration = 1.25
+        max_read = 0
+        min_read = 1024
+        for n in range (0, number_of_samples):
+            current_reading = mcp.read_adc(current_channel)
+            #print(current_reading)
+            if current_reading < min_read:
+                min_read = current_reading
+            if current_reading > max_read:
+                max_read = current_reading
+                
+        total_difference = max_read - min_read
+        
+        half_difference = total_difference/2
+        
+        raw_amps = half_difference*30/1024
+        real_amps = calibration*raw_amps
+        return real_amps
             
                 

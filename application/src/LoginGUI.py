@@ -7,6 +7,7 @@ import os
 class ConfigGui (QWidget):
     def __init__(self, width, height):
         super().__init__()
+        self.is_ready = False
         self.width = width
         self.height = height
         self.setStyleSheet("""
@@ -96,7 +97,7 @@ class ConfigGui (QWidget):
         #creating a connection string based on what the user inputted
         self.cnxn_string = 'DSN=%s;UID=%s;PWD=%s;DATABASE=%s;' % (self.dsn, self.uid, self.pwd, self.db)
         print(self.cnxn_string)
-        self.config_settings  = [self.db, self.uid, self.tablename]
+        self.config_settings  = [self.db, self.uid, self.pwd, self.tablename]
         
         #dump the values that the user input into a pickle file
         with open('configuration.pickle', 'wb') as handle:
@@ -106,6 +107,7 @@ class ConfigGui (QWidget):
         #Try to connect, if unable to, tell the user to try again
         try:
             self.cnxn = pyodbc.connect(self.cnxn_string)
+            self.is_ready = True
             self.close()
         except pyodbc.Error:
             QMessageBox.warning(self, 'Error', 'Unable to connect, try again')
