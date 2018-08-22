@@ -5,6 +5,8 @@ Project Description here
 ## Usage  
 --------
 *Here is where usage info will go once the application is finished*
+By default database configurations are saved, and reused. To change the configurations simply delete configuration.pickle for database configurations, and sensorconfiguration.pickle for the sensor configuration.
+Table columns must be saved in DataStorage.py to properly send. 
 
 
 ## Setting up the Raspberry Pi for SQL
@@ -166,6 +168,16 @@ In a terminal window:
 sudo apt-get update
 sudo apt-get install build-essential python-dev python-smbus python-pip
 sudo pip install adafruit-mcp3008
+```
+### Setting up on boot launching ###
+In a terminal window:
+```
+sudo leafpad /etc/profile
+```
+In the text editor, add in the lines :
+```
+cd /home/pi/SensorProject
+sudo python3 SensorMain.py
 ```
 
 If an error saying "Cannot load w1 kernel modules" occurs, rebooting the Pi should resolve the issue.
