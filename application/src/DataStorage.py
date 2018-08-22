@@ -26,7 +26,8 @@ class DataStorage:
         
     ## @brief Inserts the given data into a SQL Server database
     
-    #  @param connection_string Connection string based on the connection details that the user put in 
+    #  @param connection_string Connection string based on the connection details that the user put in
+    #  @param tablename Table to which the information will be set, as entered by the user
     #  @param sensortype The type of sensor that sent that data
     #  @param timestamp Current time data was sent
     #  @param temp Temperature reading in degrees Celsius
@@ -62,6 +63,8 @@ class DataStorage:
         f.close()
         
     ## @brief Syncs locally saved data with the SQL Server database
+    #  @param connection_string Connection string to be used to connect to SQL as defined by the user's entry
+    #  @param tablename Table to which the information will be set, as entered by the user
     def data_sync(self, connection_string:str, tablename:str):
         print('Syncing data')
         if (os.path.exists(DataStorage.SAVEFILE)):

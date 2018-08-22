@@ -369,6 +369,7 @@ class RPMSensorGUI():
     ## @brief Changes pin to what is specified in the dropdown
     def onRPMPinChange(self, text):
         self.rpm_pin_number = int(text)
+    
     ## @brief Defines the operation to be used for a correction factor as multipy or divide
     #  @return Returns an int to represent multiplication or division. 0 is multiply, 1 is divide
     def operationDefinition(self):

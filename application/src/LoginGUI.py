@@ -80,13 +80,14 @@ class ConfigGui (QWidget):
         self.center()
         self.setWindowTitle('Login')
         self.show()
-        
+    ## @brief Center everything in the frame   
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-        
+    
+    ## @brief Attempt to connect to SQL with the credentials given by the user. If it doesn't work, throw an error
     def handleLogin(self):
         self.dsn = 'sqlserverdatasource'
         self.db = self.dataBase.text()

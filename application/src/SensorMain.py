@@ -82,12 +82,12 @@ def current_process(channel, ds, status:bool):
 
 if (__name__ == '__main__'):
     #ntp time sync
-    """
+    
     os.system('sudo service ntp stop')
     os.system('sudo ntpd -gq')
     print('b')
     os.system('sudo service ntp start')
-    """
+    
     if(os.path.exists('configuration.pickle') and os.path.getsize('configuration.pickle') > 0):
             with open('configuration.pickle', 'rb') as handle:
                 k = pickle.load(handle)

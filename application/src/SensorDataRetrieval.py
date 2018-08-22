@@ -33,6 +33,8 @@ class SensorDataRetrieval:
     
     ## @brief Gets the data from the infrared sensor 
     #  @param rpm_pin The pin from which the IR sensor is sending data
+    #  @param operation The operation chosen by the user for the rpm to be corrected 0 is multiply, 1 is divide
+    #  @param factor The factor of correction as entered by the user
     #  @return Revolutions per minute based on how often the beam breaks
     @classmethod
     def infrared_rpm_reading(cls, rpm_pin, operation, factor) -> float:
@@ -70,7 +72,6 @@ class SensorDataRetrieval:
     
     ## @brief calculates the current based on a current sesnor going through an ADC chip
     #  @param current_channel The channel on the ADC chip to which the sensor is sending data. Between 0-7
-    #  @param calibration_factor The factor of calibration to convert the measurement into real amps
     #  @return Current measured in amps between +- 0.9 Amps
     @classmethod
     def current_reading(cls, current_channel) -> float:
