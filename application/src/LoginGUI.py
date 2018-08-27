@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMainWindow, 
 import pyodbc
 import pickle
 import os
+from configparser import ConfigParser
 
 class ConfigGui (QWidget):
     def __init__(self, width, height):
@@ -38,6 +39,8 @@ class ConfigGui (QWidget):
         self.userPassword = QLineEdit(self)
         self.userPassword.setEchoMode(QLineEdit.Password)
         self.tableName = QLineEdit(self)
+        self.hostName = QLineEdit(self)
+        self.portAddress = QLineEdit(self)
         
         #if there is a file named configuration.pickle and it is not empty, use the data in it to set the default values of the input fields
         if(os.path.exists('configuration.pickle') and os.path.getsize('configuration.pickle') > 0):
@@ -46,12 +49,14 @@ class ConfigGui (QWidget):
             handle.close()
             self.dataBase.setText(b[0])
             self.userLogin.setText(b[1])
-            self.tableName.setText(b[2])
+            self.tableName.setText(b[3])
         
         self.dataBaseLabel = QLabel("Database:")
         self.userLoginLabel = QLabel("User Login:")
         self.userPasswordLabel = QLabel("Password:")
         self.tableNameLabel = QLabel("Table Name:")
+        self.hostNameLabel = QLabel("Host:")
+        self.portAddressLabel = QLabel("Port Address")
         self.buttonLogin = QPushButton('Login', self)
         self.buttonLogin.clicked.connect(self.handleLogin)
         self.buttonLogin.setProperty('Test', True)
@@ -72,7 +77,13 @@ class ConfigGui (QWidget):
         grid.addWidget(self.tableNameLabel, 4, 1)
         grid.addWidget(self.tableName, 4, 2)
         
-        grid.addWidget(self.buttonLogin, 5, 2)
+        grid.addWidget(self.hostNameLabel, 5, 1)
+        grid.addWidget(self.hostName, 5, 2)
+        
+        grid.addWidget(self.portAddressLabel, 6, 1)
+        grid.addWidget(self.portAddress, 6, 2)
+        
+        grid.addWidget(self.buttonLogin, 7, 2)
         
         self.setLayout(grid)
 
@@ -89,8 +100,41 @@ class ConfigGui (QWidget):
     
     ## @brief Attempt to connect to SQL with the credentials given by the user. If it doesn't work, throw an error
     def handleLogin(self):
+        self.hostname = self.hostName.text()
         self.dsn = 'sqlserverdatasource'
         self.db = self.dataBase.text()
+        
+        if(self.portAddress.isModified()):
+            self.portaddress = self.portAddress.text()
+        else:
+            self.portaddress = str(1433)
+        
+        cp = ConfigParser() 
+        cp.optionxform = str # Preserves case sensitivity
+        cp.read_file(open('/etc/freetds/freetds.conf'))
+        section = 'sqlserver'
+        options = {'host': self.hostname,
+                   'port': self.portaddress,
+                   'tds version': str(7.0)}
+        for option, value in options.items():
+            cp.set(section, option, value)
+        with open('/etc/freetds/freetds.conf', 'w') as configfile:
+            cp.write(configfile)
+        
+        cp2 = ConfigParser() 
+        cp2.optionxform = str # Preserves case sensitivity
+        cp2.read_file(open('/etc/odbc.ini'))
+        section = 'sqlserverdatasource'
+        options = {'Driver': 'FreeTDS',
+                   'Description': 'ODBC connection to SQL Server',
+                   'Trace': 'None',
+                   'Servername': 'sqlserver',
+                   'Database': self.db}
+        for option, value in options.items():
+            cp2.set(section, option, value)
+        with open('/etc/odbc.ini', 'w') as configfile:
+            cp2.write(configfile)
+        
         self.uid = self.userLogin.text()
         self.pwd = self.userPassword.text()
         self.tablename = self.tableName.text()
@@ -124,5 +168,4 @@ if __name__ == '__main__':
     screenSize = screen.size()
     
     gui = ConfigGui(screenSize.width()/2, screenSize.height()/2)
-    #sys.exit(app.exec_())
     app.exec_()

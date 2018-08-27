@@ -47,7 +47,7 @@ class UpdateGui (QWidget):
     def initUi(self):
         
         sensor_column = QLabel('Sensors')
-        interval_column = QLabel('Interval of Measurement')
+        interval_column = QLabel('Interval of Measurement (Minutes)')
         pin_column = QLabel('Pin/Channel Number')
         operation_column = QLabel('Operation')
         factor_column = QLabel('Factor')
@@ -118,18 +118,23 @@ class UpdateGui (QWidget):
         for Sensor in self.SensorList:
             print(Sensor.getInterval())
             if(hasattr(Sensor, 'dht_label')):
+                Sensor.onDHTIntervalChange()
                 dht = SensorOBJ(0, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(dht)
             elif(hasattr(Sensor, 'probe_label')):
+                Sensor.onProbeIntervalChange()
                 thermal = SensorOBJ(1, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(thermal)
             elif(hasattr(Sensor, 'rpm_label')):
+                Sensor.onRPMIntervalChange() 
                 rpm = SensorOBJ(2, Sensor.getInterval(), Sensor.getPin(), Sensor.operationDefinition(), float(Sensor.rpm_factor_entry.text()))
                 self.SensorObjectList.append(rpm)
             elif(hasattr(Sensor, 'current_label')):
+                Sensor.onCurrentIntervalChange()
                 current = SensorOBJ(3, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(current)
             elif(hasattr(Sensor, 'flow_label')):
+                Sensor,onFlowIntervalChange()
                 flow = SensorOBJ(4, Sensor.getInterval(), Sensor.getPin(), None, None)
                 self.SensorObjectList.append(flow)
         
@@ -204,13 +209,8 @@ class DHTSensorGUI():
         self.dht_interval = 1
         self.dht_pin_number = 2
         
-        self.dhtintervalbox = QComboBox()
-        self.dhtintervalbox.addItem("1")
-        self.dhtintervalbox.addItem("2")
-        self.dhtintervalbox.addItem("3")
-        self.dhtintervalbox.addItem("4")
+        self.dhtintervalbox = QLineEdit()
         self.dhtintervalbox.setProperty('Test', True)
-        self.dhtintervalbox.activated[str].connect(self.onDHTIntervalChange)
         
         self.dht_pin_box = QComboBox()
         self.dht_pin_box.addItem("2")
@@ -239,8 +239,9 @@ class DHTSensorGUI():
         self.dht_pin_box.activated[str].connect(self.onDHTPinChange)
     
     ## @brief Changes interval to what is specified in the dropdown
-    def onDHTIntervalChange(self, text):
-        self.dht_interval = int(text)
+    def onDHTIntervalChange(self):
+        if(self.dhtintervalbox.isModified()):
+            self.dht_interval = float(self.dhtintervalbox.text())
     
     ## @brief Changes pin to what is specified in the dropdown
     def onDHTPinChange(self, text):
@@ -262,13 +263,9 @@ class ThermalSensorGUI():
         self.probe_interval = 1
         self.probe_pin_number = 2
         
-        self.probeintervalbox = QComboBox()
-        self.probeintervalbox.addItem("1")
-        self.probeintervalbox.addItem("2")
-        self.probeintervalbox.addItem("3")
-        self.probeintervalbox.addItem("4")
+        self.probeintervalbox = QLineEdit()
         self.probeintervalbox.setProperty('Test', True)
-        self.probeintervalbox.activated[str].connect(self.onProbeIntervalChange)
+        
         
         self.probe_pin_box = QComboBox()
         self.probe_pin_box.addItem("2")
@@ -297,8 +294,9 @@ class ThermalSensorGUI():
         self.probe_pin_box.activated[str].connect(self.onProbePinChange)
     
     ## @brief Changes interval to what is specified in the dropdown
-    def onProbeIntervalChange(self, text):
-        self.probe_interval = int(text)
+    def onProbeIntervalChange(self):
+        if(self.probeintervalbox.isModified()):
+            self.probe_interval = float(self.probeintervalbox.text())
     
     ## @brief Changes pin to what is specified in the dropdown
     def onProbePinChange(self, text):
@@ -320,13 +318,8 @@ class RPMSensorGUI():
         self.rpm_interval = 1
         self.rpm_pin_number = 2
         
-        self.rpmintervalbox = QComboBox()
-        self.rpmintervalbox.addItem("1")
-        self.rpmintervalbox.addItem("2")
-        self.rpmintervalbox.addItem("3")
-        self.rpmintervalbox.addItem("4")
+        self.rpmintervalbox = QLineEdit()
         self.rpmintervalbox.setProperty('Test', True)
-        self.rpmintervalbox.activated[str].connect(self.onRPMIntervalChange)
         
         self.rpm_pin_box = QComboBox()
         self.rpm_pin_box.addItem("2")
@@ -360,11 +353,12 @@ class RPMSensorGUI():
         self.rpm_operations.setProperty('Test', True)
         
         self.rpm_factor_entry = QLineEdit()
-        
+            
     
     ## @brief Changes interval to what is specified in the dropdown
-    def onRPMIntervalChange(self, text):
-        self.rpm_interval = int(text)
+    def onRPMIntervalChange(self):
+        if(self.rpmintervalbox.isModified()):
+            self.rpm_interval = float(self.rpmintervalbox.text())
     
     ## @brief Changes pin to what is specified in the dropdown
     def onRPMPinChange(self, text):
@@ -394,13 +388,8 @@ class CurrentSensorGUI():
         self.current_interval = 1
         self.current_pin_number = 0
         
-        self.currentintervalbox = QComboBox()
-        self.currentintervalbox.addItem("1")
-        self.currentintervalbox.addItem("2")
-        self.currentintervalbox.addItem("3")
-        self.currentintervalbox.addItem("4")
+        self.currentintervalbox = QLineEdit()
         self.currentintervalbox.setProperty('Test', True)
-        self.currentintervalbox.activated[str].connect(self.onCurrentIntervalChange)
         
         self.current_pin_box = QComboBox()
         self.current_pin_box.addItem("0")
@@ -415,8 +404,9 @@ class CurrentSensorGUI():
         self.current_pin_box.activated[str].connect(self.onCurrentPinChange)
     
     ## @brief Changes interval to what is specified in the dropdown
-    def onCurrentIntervalChange(self, text):
-        self.current_interval = int(text)
+    def onCurrentIntervalChange(self):
+        if(self.currentintervalbox.isModified()):
+            self.current_interval = float(self.currentintervalbox.text())
     
     ## @brief Changes pin to what is specified in the dropdown
     def onCurrentPinChange(self, text):
@@ -438,13 +428,8 @@ class FlowSensorGUI():
         self.flow_interval = 1
         self.flow_pin_number = 2
         
-        self.flowintervalbox = QComboBox()
-        self.flowintervalbox.addItem("1")
-        self.flowintervalbox.addItem("2")
-        self.flowintervalbox.addItem("3")
-        self.flowintervalbox.addItem("4")
+        self.flowintervalbox = QLineEdit()
         self.flowintervalbox.setProperty('Test', True)
-        self.flowintervalbox.activated[str].connect(self.onFlowIntervalChange)
         
         self.flow_pin_box = QComboBox()
         self.flow_pin_box.addItem("0")
@@ -459,8 +444,9 @@ class FlowSensorGUI():
         self.flow_pin_box.activated[str].connect(self.onFlowPinChange)
     
     ## @brief Changes interval to what is specified in the dropdown
-    def onFlowIntervalChange(self, text):
-        self.flow_interval = int(text)
+    def onFlowIntervalChange(self):
+        if(self.flowintervalbox.isModified()):
+            self.flow_interval = float(self.flowintervalbox.text())
     
     ## @brief Changes pin to what is specified in the dropdown
     def onFlowPinChange(self, text):

@@ -100,5 +100,23 @@ class SensorDataRetrieval:
         raw_amps = half_difference*30/1024
         real_amps = calibration*raw_amps
         return real_amps
+    
+    
+    ## @brief calculates the flow of air based on a flow sesnor going through an ADC chip
+    #  @param flow_channel The channel on the ADC chip to which the sensor is sending data. Between 0-7
+    #  @return Flow measured in cfm
+    @classmethod
+    def flow_reading(cls, flow_channel):
+        CLK = 18
+        MISO = 23
+        MOSI = 24
+        CS   = 25
+        mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+        sum = 0
+        number_of_samples = 1480
+        for n in range (0, number_of_samples):
+            flow_reading = mcp.read_adc(flow_channel)
+            sum += flow_reading
+        average_flow = sum/number_of_samples
+        return average_flow
             
-                
