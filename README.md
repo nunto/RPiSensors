@@ -15,8 +15,8 @@ By default the data can only be sent by a table with the columns SensorType, Tim
 --------------------------------------
 Begin the setup by opening up a terminal window.  
 
-Make sure python 2 is installed.
-This can be checked by typing `python --version`. If it is not installed, type `sudo apt-get install python2.7`.
+Make sure python 3 is installed.
+This can be checked by typing `python --version`. If it is not installed, type `sudo apt-get install python3.5`.
 
 Install the following libraries via apt-get install:
 - unixodbc
