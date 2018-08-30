@@ -135,7 +135,7 @@ If there is a lbf77blas.so.3 error, running `sudo apt-get install libatlas-base-
 PyQt5 must be installed for the gui to display.
 In a terminal:
 ```
-sudo apt-get install python3-PyQt5
+sudo apt-get install python3-pyqt5
 ```
 
 ### NTP
