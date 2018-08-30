@@ -39,7 +39,11 @@ class Sensors extends Component {
     
     // Updates the data via a call to the respective php file
     async dataUpdate() {
+<<<<<<< HEAD
         await fetch('http://172.18.19.102:8081/retrieve_data.php')
+=======
+        await fetch('http://172.18.19.107:8081/retrieve_data.php')
+>>>>>>> c9e9ea6f2c9b0a6cadddd120825cae206d6eba92
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson)
@@ -67,7 +71,7 @@ class Sensors extends Component {
 
     // Retrieves initial data
     async componentDidMount() {
-        await fetch('http://172.18.19.130:8081/retrieve_data.php')
+        await fetch('http://172.18.19.107:8081/retrieve_data.php')
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson)

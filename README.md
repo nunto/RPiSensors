@@ -6,13 +6,17 @@ Project Description here
 --------
 *Here is where usage info will go once the application is finished*
 
+By default database configurations are saved, and reused. To change the configurations simply delete configuration.pickle for database configurations, and sensorconfiguration.pickle for the sensor configuration.
+Table columns must be saved in DataStorage.py to properly send. 
+By default the data can only be sent by a table with the columns SensorType, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow.
+
 
 ## Setting up the Raspberry Pi for SQL
 --------------------------------------
 Begin the setup by opening up a terminal window.  
 
-Make sure python 2 is installed.
-This can be checked by typing `python --version`. If it is not installed, type `sudo apt-get install python2.7`.
+Make sure python 3 is installed.
+This can be checked by typing `python --version`. If it is not installed, type `sudo apt-get install python3.5`.
 
 Install the following libraries via apt-get install:
 - unixodbc
@@ -24,7 +28,7 @@ Install the following libraries via apt-get install:
 eg: `sudo apt-get install unixodbc`.
 
 Then, install the pyodbc library for python:   
-`pip install pyodbc`.
+`pip3 install pyodbc`.
 
 Next is the configuration,
 
@@ -167,5 +171,69 @@ sudo apt-get update
 sudo apt-get install build-essential python-dev python-smbus python-pip
 sudo pip install adafruit-mcp3008
 ```
+### Setting up on boot launching ###
+In a terminal window:
+```
+sudo leafpad /etc/profile
+```
+In the text editor, add in the lines :
+```
+cd /home/pi/SensorProject
+sudo python3 SensorMain.py &
+```
+
+If for any reason booting on launch is no longer needed, it can be turned off by adding a # before sudo python3 SensorMain.py in the previous step.
 
 If an error saying "Cannot load w1 kernel modules" occurs, rebooting the Pi should resolve the issue.
+
+# Webpage
+
+Please read through the ProjectGuide.pdf in the /doc/ folder for a description of each file in the webpage directory.
+
+## Setting up the server
+
+Open up a terminal window and `cd` into SensorReadings/webpage.
+
+NOTE: Make sure you are in webpage before running the following commands, the reason behind this is that the package.json folder is under webpage and you must be in the same directory as it to install the node modules.
+
+Once  in webpage, use the following:
+```
+npm install
+```
+
+this will install the required modules.
+
+To get the server up and running you will need 2 terminal windows:
+
+In the 1st window:
+```
+npm run react-dev
+```
+
+In the 2nd window:
+```
+npm run server-dev
+```
+
+If it does not run due to a module not being installed, typing:
+```
+npm install <PACKAGE NAME HERE> --save
+```
+should fix that. Do this for each required module that was not installed. A list of all the packages that are used is in package.json, under dependencies.
+
+## Locally hosting the PHP files
+
+To locally host the php files, download XAMPP.
+
+Copy and paste the db_config.php and query.php files into C:\XAMPP\htdocs.  
+
+Anytime you change these files, make sure to adjust the files in htdocs as well.
+
+Now, open up XAMPP,
+
+Click Config->Apache(httpd.conf) in the Apache section, and change the line that says `Listen 8080` to say `Listen 8081` which is the port specified in the jsx files.
+
+
+## File Changes
+
+There are some changes required to make the page functional; changing the db_config file to contain the proper credentials, and adjusting the IP in the fetch statements to match your computer's IP.
