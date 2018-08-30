@@ -10,13 +10,16 @@ class Login extends Component {
             password: ''
         }
     }
-
+    
+    // Validation, currently only checks for length
     validateForm = ()  => {
         console.log("validating form")
         return this.state.email.length > 0 && this.state.password.length > 0;
     }
 
+    // On Form change
     handleChange = (event) => {
+        // The default action of the event will not be triggered
         event.preventDefault();
     }
 

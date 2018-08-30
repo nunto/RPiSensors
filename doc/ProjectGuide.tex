@@ -1,0 +1,139 @@
+\documentclass[12pt, titlepage, a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[english]{babel}
+\usepackage[a4paper, top=3cm, bottom=2cm, left=2cm, right=2cm, marginparwidth=1.75cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{xparse}
+\usepackage{fancyhdr}
+
+\fancyhead[L]{\today}
+\fancyhead[C]{Webpage Documentation}
+\fancyhead[R]{MTechHub}
+\pagestyle{fancy}
+
+\definecolor{light-gray}{gray}{0.35}
+
+\NewDocumentCommand{\keyword}{v}{%
+\texttt{\textcolor{light-gray}{#1}}%
+}
+
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\title{Webpage Documentation}
+\author{
+    Michael Panunto\\
+    MTechHub
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Webpage Directory}
+
+\begin{itemize}
+    \item \keyword{package.json} contains the data containing each package that is used by this project. 
+    \item \keyword{webpack.config.js} configuration for webpack which is used when running the server.
+\end{itemize}
+
+\subsection{node\_modules}
+
+\keyword{node_modules} is an automatically generated directory from node.js. It contains the files for all the libraries being used by the project, you shouldn't ever need to touch it. With node installed, open the command prompt and navigate to the webpage directory. Typing \lstinline{npm install} will automatically install all the required libraries that are listed in package.json.
+
+\subsection{php}
+
+Contains all the php files that are required.
+
+\begin{itemize}
+    \item \keyword{db_config.php:} configuration data for the SQL Server database connection.
+    \item \keyword{query.php:} executes a sql query and returns the result.
+\end{itemize}
+
+\subsection{react-client}
+\subsubsection{dist}
+
+\keyword{dist} contains \keyword{bundle.js}, \keyword{index.html}, \keyword{styles.css}; these files shouldn't need to be changed. They contain data required for displaying the react components. \textbf{Note}: If a stylesheet is required via html (e.g. bootstrap), add it to the index.html file.  
+
+\subsubsection{src}
+
+\keyword{src} is the directory where all the webpage code is located. \keyword{index.jsx} is the first file that will be called on start. It contains the lines:
+
+\begin{lstlisting}[language=HTML]
+<Router>
+    <App />
+</Router>
+\end{lstlisting}
+
+which means that it will render the App.jsx file in a Router block which is used for navigation.\\
+
+\paragraph{components}
+\keyword{components} contains the bulk of the jsx (react) files.
+
+\begin{itemize}
+    \item \keyword{App.jsx:} contains
+        \begin{lstlisting}[language=HTML]
+            <NavBar />
+            <Routes />
+        \end{lstlisting}
+        
+        this renders the Navigation bar, and Routes which allows users to switch tabs.
+
+    \item \keyword{Devices.jsx:} this class controls the devices tab.
+    \item \keyword{HomePage.jsx:} this class controls the main tab (home). It just calls Dashboard.jsx from the dashboard directory.
+    \item \keyword{Sensors.jsx:} this class controls the sensors tab.
+    \item \keyword{dashboard}
+        \begin{itemize}
+            \item \keyword{Container.jsx:} container class for the Dashboard. 
+            \item \keyword{CustomFrame.jsx:} frame class for the Dashboard.
+            \item \keyword{Dashboard.jsx:} The main dashboard that gets called on the homepage.
+            \item \keyword{AddWidgetDialog.jsx:} The modal that pops up when the user wishes to add a new widget.
+            \item \keyword{EditBar.jsx:} The bar that appears above each section when 'edit' is selected.
+            \item \keyword{Widgets:} See description for this folder below.
+        \end{itemize}
+    \item \keyword{header}
+        \begin{itemize}
+            \item \keyword{NavBar.jsx:} contains the navigation bar that displays at the top of the webpage. The login dialog is also dealt with inside this class.
+        \end{itemize}
+    \item \keyword{routes}
+        \begin{itemize}
+            \item \keyword{Routes.jsx:} contains the data required to support navigation to different tabs whenever a button is clicked. 
+        \end{itemize}
+    \item \keyword{style}
+        \begin{itemize}
+            \item this directory contains the different css styling classes. Note that some styling is also done at the bottom of jsx classes.
+        \end{itemize}
+    \item \keyword{widgets} 
+        \begin{itemize}
+            \item this directory contains the chart widgets that will be displayed on the dashboard. The general format for making a chart is:
+            \begin{lstlisting}[language=HTML]
+                <Chart
+                    chartType="ScatterChart"
+                    rows={this.state.data}
+                    columns={this.state.columns}
+                    options={this.state.options}
+                    graph_id="ScatterChart"
+                    width='100%'
+                    legend_toggle 
+                />
+            \end{lstlisting}
+            where data is stored in the state.
+        \end{itemize}
+\end{itemize}
+
+\subsection{server}
+
+\keyword{server} contains the file \keyword{index.js} which is how the webpage is hosted via expess.js. The port can easily be changed here through the const PORT variable, or in a .env file using the variable PORT.
+
+\end{document}

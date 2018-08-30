@@ -15,3 +15,11 @@ node_modules/
 
 # Mac
 .ds_store
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.files
+*.log
+*.synctex.gz
+*.toc

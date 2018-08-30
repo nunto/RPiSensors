@@ -90,7 +90,7 @@ class NavBar extends Component {
                         </Modal.Content>
                         <Modal.Actions>
                             <Button style={{backgroundColor: '#28965A'}} animated>
-                                <Button.Content visible><h4 class='label-text'>Submit</h4></Button.Content>
+                                <Button.Content visible><h5 class='label-text'>Submit</h5></Button.Content>
                                 <Button.Content hidden>
                                     <Icon inverted name='arrow right' />
                                 </Button.Content>

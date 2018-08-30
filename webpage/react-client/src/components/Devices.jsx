@@ -67,16 +67,19 @@ class Devices extends Component {
         }
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     }
-
+    
+    // Listener to check for any window resizing
     componentDidMount() {
         this.updateWindowDimensions();
         window.addEventListener('resize', this.updateWindowDimensions);
     }
 
+    // Close listener on component unmount
     componentWillUnmount() {
         window.removeEventListener('resize', this.updateWindowDimensions);
     }
 
+    // Adjusts columns based on window size
     updateWindowDimensions() {
         var cols = this.state.columns
         this.setState({ width: window.innerWidth, height: window.innerHeight })
@@ -151,6 +154,8 @@ class Devices extends Component {
         var arr = [...this.state.devices];
         var obj = arr.find(device => device.id === this.state.ctx)
         var index = arr.indexOf(obj)
+        
+        // Saves the edited data
         if (this.state.submittedName.replace(/\s/g, '') !== '') {
             arr[index].header = this.state.submittedName;
         }
@@ -206,7 +211,10 @@ class Devices extends Component {
         })
         
     }
-
+    // Renders the view
+    // If there are devices, display them
+    // If there are no current devices, inform user they need to add a device
+    // The add/edit Modals will show when modalActive or editModal respectively are set to true
     render () {
         const { name, desc } = this.state
         
@@ -215,7 +223,7 @@ class Devices extends Component {
                 <div>
                     <div>
                         <Button style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}} animated onClick={this.openModal}>
-                            <Button.Content visible><h4 class='label-text'>New Device</h4></Button.Content>
+                            <Button.Content visible><h5 class='label-text'>New Device</h5></Button.Content>
                             <Button.Content hidden>
                                 <Icon inverted name='plus circle' />
                             </Button.Content>
@@ -248,7 +256,7 @@ class Devices extends Component {
                         >
                             <Header as='h2'>
                                 <Icon name="sign in alternate" style={{color: '#28965A'}} />
-                                <Header.Content>Login</Header.Content>
+                                <Header.Content>New Device</Header.Content>
                             </Header>
                             <Modal.Content>
                                 <Form onSubmit={this.handleSubmit}>
@@ -307,8 +315,8 @@ class Devices extends Component {
                                 </Form>
                             </Modal.Content>
                             <Modal.Actions>
-                                <Button style={{backgroundColor: '#28965A'}} animated onClick={this.handleEditSave}>
-                                    <Button.Content visible><h4 class='label-text'>Save Changes</h4></Button.Content>
+                                <Button style={{backgroundColor: '#28965A'}} animated small onClick={this.handleEditSave}>
+                                    <Button.Content visible><h5 class='label-text'>Save Changes</h5></Button.Content>
                                     <Button.Content hidden>
                                         <Icon inverted name='save alternate' />
                                     </Button.Content>
@@ -322,8 +330,8 @@ class Devices extends Component {
         else {
             return (
                 <div>
-                    <Button style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}} animated onClick={this.openModal}>
-                            <Button.Content visible><h4 class='label-text'>New Device</h4></Button.Content>
+                    <Button small style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}} animated onClick={this.openModal}>
+                            <Button.Content visible><h5 class='label-text'>New Device</h5></Button.Content>
                             <Button.Content hidden>
                                 <Icon inverted name='plus circle' />
                             </Button.Content>
@@ -340,7 +348,7 @@ class Devices extends Component {
                         >
                             <Header as='h2'>
                                 <Icon name="sign in alternate" style={{color: '#28965A'}} />
-                                <Header.Content>Login</Header.Content>
+                                <Header.Content>New Device</Header.Content>
                             </Header>
                             <Modal.Content>
                                 <Form onSubmit={this.handleSubmit}>

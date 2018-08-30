@@ -30,26 +30,33 @@ class Sensors extends Component {
         this.handleGraphUpdate = this.handleGraphUpdate.bind(this)
     }
 
+    // Called when refresh is clicked
+    // Retrieves current data and forces a refresh
     handleGraphUpdate = () => {
         this.dataUpdate()
         .then(() => this.forceUpdate())
     }
     
+    // Updates the data via a call to the respective php file
     async dataUpdate() {
-        await fetch('http://172.18.19.130:8081/retrieve_data.php')
+        await fetch('http://172.18.19.102:8081/retrieve_data.php')
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson)
             var rows = JSON.parse(responseJson)
+            console.log(rows)
             this.setState({ data: rows })
 
         })
     }
 
+    // Changes whether sidebar is visible or not
     handleButtonClick = () => this.setState({ visible: !this.state.visible })
 
+    // Hides sidebar
     handleSidebarHide = () => this.setState({ visible: false })
 
+    // Handles a sidebar menu option selection
     handleMenuSelect = (e, {name}) => {
         this.setState({ 
             menuTitle: name,
@@ -58,6 +65,7 @@ class Sensors extends Component {
          this.handleButtonClick()
     }
 
+    // Retrieves initial data
     async componentDidMount() {
         await fetch('http://172.18.19.130:8081/retrieve_data.php')
         .then((response) => response.json())
@@ -75,7 +83,9 @@ class Sensors extends Component {
         return (
             <div>
                 <div>
-                    <Button onClick={this.handleButtonClick} style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}}>Select by...</Button>
+                    <Button onClick={this.handleButtonClick} style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}}>
+                        Select by...
+                    </Button>
                     <Button onClick={this.handleGraphUpdate} style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block', float:'right'}}>Refresh</Button>
                     <Sidebar.Pushable as={Segment}>
                         <Sidebar

@@ -6,7 +6,7 @@ include 'db_config.php';
 header('Content-Type: application/json');
 $connectionInfo = array("Database"=>$DATABASE_NAME, "UID"=>$HOST_USER, "PWD"=>$HOST_PASSWORD);
 
-error_log("Attempting to connect to DB");
+error_log("Attempting to connect to DB" + $HOST);
 $conn = sqlsrv_connect($HOST, $connectionInfo);
 
 // Log errors in the case of a failed connection
@@ -26,7 +26,7 @@ else {
     error_log("Connection successful");
 }
 
-$query = "SELECT Timestamp, Temperature, Humidity FROM TempHumidity";
+$query = "SELECT Timestamp, Temperature, Humidity FROM MachineSensorData";
 $stmt = sqlsrv_query($conn, $query);
 
 if ($stmt === false) {
