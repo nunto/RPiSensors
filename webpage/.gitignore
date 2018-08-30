@@ -1,0 +1,25 @@
+# Logs
+logs
+*.Logs
+*.log
+
+# Compiled files
+build/
+bundle.js
+
+# Dependencies
+node_modules/
+
+# VSCode
+.vscode/
+
+# Mac
+.ds_store
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.files
+*.log
+*.synctex.gz
+*.toc
