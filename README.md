@@ -168,16 +168,16 @@ replacing <PIN#> with the number of the pin you are using.
 In a terminal window:
 ```
 sudo apt-get update
-sudo pip3 install adafruit-mcp3008
+pip3 install adafruit-mcp3008
 ```
 ### Setting up on boot launching ###
 In a terminal window:
 ```
 sudo leafpad /etc/profile
 ```
-In the text editor, add in the lines :
+In the text editor, at the bottom add in the lines :
 ```
-cd /home/pi/SensorProject
+cd /home/pi/
 sudo python3 SensorMain.py &
 ```
 
