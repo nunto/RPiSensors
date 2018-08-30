@@ -28,7 +28,7 @@ Install the following libraries via apt-get install:
 eg: `sudo apt-get install unixodbc`.
 
 Then, install the pyodbc library for python:   
-`pip install pyodbc`.
+`pip3 install pyodbc`.
 
 Next is the configuration,
 
