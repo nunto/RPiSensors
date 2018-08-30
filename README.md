@@ -135,7 +135,7 @@ If there is a lbf77blas.so.3 error, running `sudo apt-get install libatlas-base-
 PyQt5 must be installed for the gui to display.
 In a terminal:
 ```
-sudo apt-get install python3-PyQt5
+sudo apt-get install python3-pyqt5
 ```
 
 ### NTP
@@ -168,17 +168,16 @@ replacing <PIN#> with the number of the pin you are using.
 In a terminal window:
 ```
 sudo apt-get update
-sudo apt-get install build-essential python-dev python-smbus python-pip
-sudo pip install adafruit-mcp3008
+pip3 install adafruit-mcp3008
 ```
 ### Setting up on boot launching ###
 In a terminal window:
 ```
 sudo leafpad /etc/profile
 ```
-In the text editor, add in the lines :
+In the text editor, at the bottom add in the lines :
 ```
-cd /home/pi/SensorProject
+cd /home/pi/
 sudo python3 SensorMain.py &
 ```
 
