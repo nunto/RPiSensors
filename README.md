@@ -168,8 +168,7 @@ replacing <PIN#> with the number of the pin you are using.
 In a terminal window:
 ```
 sudo apt-get update
-sudo apt-get install build-essential python-dev python-smbus python-pip
-sudo pip install adafruit-mcp3008
+sudo pip3 install adafruit-mcp3008
 ```
 ### Setting up on boot launching ###
 In a terminal window:
