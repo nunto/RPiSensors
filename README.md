@@ -28,7 +28,7 @@ Install the following libraries via apt-get install:
 eg: `sudo apt-get install unixodbc`.
 
 Then, install the pyodbc library for python:   
-`pip3 install pyodbc`.
+`sudo pip3 install pyodbc`.
 
 Next is the configuration,
 
@@ -124,8 +124,8 @@ In your texteditor type:
 
 ```
 sudo ldconfig
-python3 -m pip install h5py
-python3 -m pip install tables
+sudo python3 -m pip install h5py
+sudo python3 -m pip install tables
 ```
 
 If there is a lbf77blas.so.3 error, running `sudo apt-get install libatlas-base-dev` should resolve the issue.
