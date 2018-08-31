@@ -10,6 +10,15 @@ By default database configurations are saved, and reused. To change the configur
 Table columns must be saved in DataStorage.py to properly send. 
 By default the data can only be sent by a table with the columns SensorType, Timestamp, Temperature, Humidity, RPM, Amperage, Pressure, Flow.
 
+By default, the commands to sync on start up are commented out. To change this simply remove the quotation marks around the following section:
+
+```
+    """
+    os.system('sudo service ntp stop')
+    os.system('sudo ntpd -gq')
+    os.system('sudo service ntp start')
+    """
+```
 
 ## Setting up the Raspberry Pi for SQL
 --------------------------------------
