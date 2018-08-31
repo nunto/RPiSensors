@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Modal from 'react-modal';
+import {Modal, Header, Button} from 'semantic-ui-react';
 
 const AddWidgetDialog = ({ widgets, isModalOpen, onRequestClose, onWidgetSelect}) => {
   const widgetItems = Object.keys(widgets).map((widget, key) => {
@@ -12,27 +12,28 @@ const AddWidgetDialog = ({ widgets, isModalOpen, onRequestClose, onWidgetSelect}
       </div>
     );
   });
+  
   return (
+    <div style={styles.content}>
     <Modal
-      className="Modal__Bootstrap modal-dialog"
-      isOpen={isModalOpen}>
-      <div className="modal-content">
-       <div className="modal-header">
-         <button type="button" className="close" onClick={onRequestClose}>
-           <span aria-hidden="true">&times;</span>
-           <span className="sr-only">Close</span>
-         </button>
-         <h4 className="modal-title">Add a widget</h4>
-       </div>
-       <div className="modal-body">
-         <h5>Pick a widget to add</h5>
+      open={isModalOpen}
+      onClose={onRequestClose}
+      closeIcon
+      size='small'
+    >
+      <Modal.Header>
+        Pick a widget to add
+      </Modal.Header>
+      <Modal.Content>
          {widgetItems}
-       </div>
-       <div className="modal-footer">
-         <button type="button" className="btn btn-default" onClick={onRequestClose}>Close</button>
-       </div>
-      </div>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button primary onClick={onRequestClose}>
+          Close
+        </Button>
+      </Modal.Actions>
     </Modal>
+    </div>
   );
 };
 
@@ -52,7 +53,12 @@ const styles = {
         bottom                : 'auto',
         marginRight           : '-50%',
         transform             : 'translate(-50%, -50%)',
-    }
+    },
+    modal : {
+      marginTop: '0px !important',
+      marginLeft: 'auto',
+      marginRight: 'auto'
+  }
 }
 
 export default AddWidgetDialog;

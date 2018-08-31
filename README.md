@@ -236,3 +236,10 @@ Click Config->Apache(httpd.conf) in the Apache section, and change the line that
 ## File Changes
 
 There are some changes required to make the page functional; changing the db_config file to contain the proper credentials, and adjusting the IP in the fetch statements to match your computer's IP.
+
+## Notes
+
+Phase out the use of retrieve_data.php.
+Using query.php in the same method I've used it for all of the widgets would keep consistency. I did not have time to finish this but can do it at any point in the future.
+
+Additionally, the same lines of code are used across all the widgets to retrieve data. Consider turning this into a function in a js class that you call from each widget.

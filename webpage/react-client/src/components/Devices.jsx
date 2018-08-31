@@ -330,8 +330,8 @@ class Devices extends Component {
         else {
             return (
                 <div>
-                    <Button small style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}} animated onClick={this.openModal}>
-                            <Button.Content visible><h5 class='label-text'>New Device</h5></Button.Content>
+                    <Button style={{margin: '12px', backgroundColor: '#28965A', color: 'white', display: 'inline-block'}} animated onClick={this.openModal}>
+                            <Button.Content visible>New Device</Button.Content>
                             <Button.Content hidden>
                                 <Icon inverted name='plus circle' />
                             </Button.Content>
